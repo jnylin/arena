@@ -53,7 +53,7 @@ function CatalogueRecord(e,selector) {
 	if ( isbns ) {
 		for ( var i = 0; i < isbns.length; i++ ) {
 			var thisIsbn = isbns[i].replace(/-/g,"");
-			if ( thisIsbn.length == 13 ) {
+			if ( thisIsbn.length === 13 ) {
 				isbn = thisIsbn;
 				break;
 			}
@@ -95,11 +95,11 @@ CatalogueRecord.prototype.decorate = function() {
 CatalogueRecord.prototype.removeMediumFromTitle = function() {
 	var obj = this.subElements.title;
 	obj.text(((obj.text().replace(/\[.*\] ([\/:])/,'$1'))));
-}
+};
 CatalogueRecord.prototype.truncateTitle = function() {
 	var title = new Title( this.title );
 	this.subElements.title.html( truncate(title.main + " " + title.part, 30) );
-}
+};
 CatalogueRecord.prototype.getSmakprov = function(view) {
 	// view: Från katalogpost-sidna eller från en träfflista?
 	// detail eller list
@@ -129,10 +129,10 @@ Smakprov.prototype.callback = function(obj, type) {
 			}
 		
 		}
-	}
-}
+	};
+};
 
 Smakprov.prototype.getUrl = function() {
 	return 'http://www.smakprov.se/smakprov.php?isbn=' + this.isbn + '&l=vimmerby';
-}
+};
 

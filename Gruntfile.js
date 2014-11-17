@@ -39,6 +39,9 @@ module.exports = function(grunt) {
       options: {
         jshintrc: '.jshintrc'
       },
+	  globals: {
+		jQuery: true
+	  },
       gruntfile: {
         src: 'Gruntfile.js'
       },
