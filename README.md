@@ -3,13 +3,6 @@
 Common js for Axiell Arena
 
 ## Getting Started
-### On the server
-Install the module with: `npm install arenajs`
-
-```javascript
-var arenajs = require('arenajs');
-arenajs.awesome(); // "awesome"
-```
 
 ### In the browser
 Download the [production version][min] or the [development version][max].
@@ -25,24 +18,6 @@ In your web page:
 awesome(); // "awesome"
 </script>
 ```
-
-In your code, you can attach arenajs's methods to any object.
-
-```html
-<script>
-var exports = Bocoup.utils;
-</script>
-<script src="dist/arenajs.min.js"></script>
-<script>
-Bocoup.utils.awesome(); // "awesome"
-</script>
-```
-
-## Documentation
-_(Coming soon)_
-
-## Examples
-_(Coming soon)_
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
