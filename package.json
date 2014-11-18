@@ -20,18 +20,13 @@
       "url": "https://github.com/jnylin/arena/blob/master/LICENSE-GPL"
     }
   ],
-  "main": "lib/arenajs",
-  "engines": {
-    "node": ">= 0.10.0"
-  },
   "scripts": {
-    "test": "grunt nodeunit"
+    "test": "grunt"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-jshint": "~0.6.0",
-    "grunt-contrib-nodeunit": "~0.2.0",
     "grunt-contrib-uglify": "~0.2.0",
     "grunt-contrib-watch": "~0.4.0"
   },

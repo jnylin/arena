@@ -1,4 +1,4 @@
-/*! arenajs - v0.1.0 - 2014-11-17
+/*! arenajs - v0.1.0 - 2014-11-18
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
 function CatalogueRecord(e,selector) {
