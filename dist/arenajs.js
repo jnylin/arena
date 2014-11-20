@@ -1,4 +1,4 @@
-/*! arenajs - v0.1.0 - 2014-11-18
+/*! arenajs - v0.1.0 - 2014-11-20
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
 function CatalogueRecord(e,selector) {
@@ -159,3 +159,40 @@ SearchResult.prototype.dvdCovers = function() {
 
 
 
+
+'use strict';
+
+var arenajs = require('../lib/arenajs.js');
+
+/*
+  ======== A Handy Little Nodeunit Reference ========
+  https://github.com/caolan/nodeunit
+
+  Test methods:
+    test.expect(numAssertions)
+    test.done()
+  Test assertions:
+    test.ok(value, [message])
+    test.equal(actual, expected, [message])
+    test.notEqual(actual, expected, [message])
+    test.deepEqual(actual, expected, [message])
+    test.notDeepEqual(actual, expected, [message])
+    test.strictEqual(actual, expected, [message])
+    test.notStrictEqual(actual, expected, [message])
+    test.throws(block, [error], [message])
+    test.doesNotThrow(block, [error], [message])
+    test.ifError(value)
+*/
+
+exports['awesome'] = {
+  setUp: function(done) {
+    // setup here
+    done();
+  },
+  'no args': function(test) {
+    test.expect(1);
+    // tests here
+    test.equal(arenajs.awesome(), 'awesome', 'should be awesome.');
+    test.done();
+  }
+};

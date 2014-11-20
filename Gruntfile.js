@@ -40,21 +40,14 @@ module.exports = function(grunt) {
 	  },
       gruntfile: {
         src: 'Gruntfile.js'
-      },
-      test: {
-        src: ['test/**/*.js']
-      },
+      }
     },
     watch: {
       gruntfile: {
         files: '<%= jshint.gruntfile.src %>',
         tasks: ['jshint:gruntfile']
-      },
-      test: {
-        files: '<%= jshint.test.src %>',
-        tasks: ['concat', 'jshint:test']
-      },
-    },
+      }
+    }
   });
 
   // These plugins provide necessary tasks.
