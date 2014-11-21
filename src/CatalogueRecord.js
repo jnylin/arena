@@ -97,7 +97,11 @@ function CatalogueRecord(e,selector) {
 /***********/
 /* Metoder */
 /***********/
-CatalogueRecord.prototype.decorate = function() {
+CatalogueRecord.prototype.decorate = function(view, decoration) {
+	/* view: detail eller list,
+	         d.v.s. katalogpostsida eller träfflista 
+
+	   decoration: funktion eller mervärde att lägga till */	 
 };
 
 CatalogueRecord.prototype.hideField = function(field) {
