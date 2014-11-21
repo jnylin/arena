@@ -17,7 +17,7 @@
   "licenses": [
     {
       "type": "GPL",
-      "url": "https://github.com/jnylin/arena/blob/master/LICENSE-GPL"
+      "url": "https://github.com/jnylin/arena/gpl-3.0.txt"
     }
   ],
   "scripts": {
