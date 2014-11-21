@@ -109,7 +109,7 @@ CatalogueRecord.prototype.hideField = function(field) {
 };
 
 CatalogueRecord.prototype.removeMediumFromTitle = function() {
-	// Tar bort allmän medieterm från den utskrivna titeln
+	// Tar bort allmän medieterm från titel-elementet
 	var obj = this.subElements.title;
 	obj.text(((obj.text().replace(/\[.*\] ([\/:])/,'$1'))));
 };
