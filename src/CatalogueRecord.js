@@ -61,7 +61,7 @@ function CatalogueRecord(e,selector) {
 	}
 
 	/* Egenskaper för objektet */
-	this.title = title;
+	this.title = new Title(title, originalTitle);
 	if ( author ) {
 		this.author = {
 			inverted: this.subElements.author.text(),
@@ -105,6 +105,10 @@ CatalogueRecord.prototype.getSmakprov = function(view) {
 	// detail eller list
 	var smakprov = new Smakprov(this.isbn, view); 
 };
+
+
+/* Smakprov */
+
 Smakprov = function(isbn, callback) {
 	var that = this;
 	this.isbn = isbn;
