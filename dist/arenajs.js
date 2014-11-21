@@ -1,4 +1,4 @@
-/*! arenajs - v0.1.0 - 2014-11-20
+/*! arenajs - v0.1.0 - 2014-11-21
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
 function CatalogueRecord(e,selector) {
@@ -51,7 +51,7 @@ function CatalogueRecord(e,selector) {
 	}
 
 	/* Egenskaper för objektet */
-	this.title = title;
+	this.title = new Title(title, originalTitle);
 	if ( author ) {
 		this.author = {
 			inverted: this.subElements.author.text(),
@@ -73,35 +73,81 @@ function CatalogueRecord(e,selector) {
 	}	
 	if ( isbn ) {
 		this.isbn = isbn;
-	}	
+	}
+	
+	/* Priviligerade funktioner */
+	this.getSelector = function() {
+		return selector;
+	};
 
 	console.log(this);
-	console.log(this.author);	
 }
 
-// Metoder
+
+/***********/
+/* Metoder */
+/***********/
 CatalogueRecord.prototype.decorate = function() {
 };
+
+CatalogueRecord.prototype.hideField = function(field) {
+	$('.arena-'+this.getSelector()+'-'+field).hide();
+};
+
 CatalogueRecord.prototype.removeMediumFromTitle = function() {
 	var obj = this.subElements.title;
 	obj.text(((obj.text().replace(/\[.*\] ([\/:])/,'$1'))));
+	// UNDERTITEL!!!
 };
+
 CatalogueRecord.prototype.truncateTitle = function() {
-	var title = new Title( this.title );
-	this.subElements.title.html( truncate(title.main + " " + title.part, 30) );
+	this.subElements.title.html( truncate(this.title.main + " " + this.title.part, 30) );
 };
+
 CatalogueRecord.prototype.getSmakprov = function(view) {
 	// view: Från katalogpost-sidna eller från en träfflista?
 	// detail eller list
 	var smakprov = new Smakprov(this.isbn, view); 
 };
-Smakprov = function(isbn, callback) {
+
+
+/* Relationen träfflista - post; i träfflistan finns poster */
+ 
+function SearchResult() {
+	/*portlet-listRecordSearchResult*/
+	/*portlet-queryRecordSearchResult*/
+	
+	this.init();
+	Wicket.Ajax.registerPostCallHandler(function () { 
+		this.init();
+	});
+
+}
+
+SearchResult.prototype.init = function() {
+	/* Den här funktionen borde kunna ta inställningar */
+	/* selector?? element?? */
+	$('.arena-library-record').each(function() {
+		var libraryRecord = new CatalogueRecord(this,'record');
+		libraryRecord.truncateTitle();
+		libraryRecord.hideField('isbn');
+		//libraryRecord.getSmakprov('list');
+	});
+};
+
+SearchResult.prototype.smakprov = function() {
+	/* .arena-library-record.each återkommer */
+};
+
+SearchResult.prototype.dvdCovers = function() {
+};
+function Smakprov(isbn, callback) {
 	var that = this;
 	this.isbn = isbn;
 	
 	$.getJSON('/smakprov/v1/records?isbn=' + this.isbn, that.callback(this, callback));	
 	
-};
+}
 
 Smakprov.prototype.callback = function(obj, type) {
 	return function(records) {
@@ -125,74 +171,153 @@ Smakprov.prototype.callback = function(obj, type) {
 Smakprov.prototype.getUrl = function() {
 	return 'http://www.smakprov.se/smakprov.php?isbn=' + this.isbn + '&l=vimmerby';
 };
-
-
-/* Relationen träfflista - post; i träfflistan finns poster */
- 
-function SearchResult() {
-	/*portlet-listRecordSearchResult*/
-	/*portlet-queryRecordSerachResult*/
+function Title(str,origTi) {
+	var h, b, n, ti, subTi, part;
+	ti = str;
+	origTi = origTi || ti;
 	
-	this.init();
-	/*Wicket.Ajax.registerPostCallHandler(function () { 
-		this.init();
-	});	*/
+	console.log("ti = " + ti);
+	console.log(ti);
+	console.log("ti.search = " + ti.search);
 
+	// "Klipp ut" undertitel, delbeteckning och huvudtitel!!
+	h = ti.search("\\[");    // Medieterm
+	b = ti.search(" :");	     // Undertitel
+	c = ti.search("/");		 // Upphov
+	// Delbeteckning
+	n = ti.search("\\[?(P\\.|Season|Series)"); // Behöver få fram säsongsnummer!
+	
+	
+	// Klammer
+			
+	if ( b > -1 ) {
+		b = b+1;
+	}			
+	if ( c > -1 ) {
+		c = c+2;
+	}
+
+	// Undertitel
+	subTi = "";
+	if ( b > -1 ) {
+		b = b+2;			
+
+		if ( c > -1 ) {
+			subTi = ti.substr(b, c-b-3);
+		}
+		else if ( n > -1 ) {
+			subTi = ti.substr(b, n-b-1);		
+		}
+		else {
+			subTi = ti.substr(b);
+		}
+		
+		subTi = subTi.replace(/[\[\]]/g,"");
+	}
+			
+	// Underserie/delbeteckning
+	part = "";
+	if ( n > -1 ) {
+		str = ti.substr(n);
+		console.log(str);
+		part = str.substr(str.search(/[0-9]/));
+		part = part.replace("]","");
+		str = "";
+		if ( part === -1 ) {
+			part = "";
+		}
+	}
+			
+	// Titel
+	if ( h === n )  {
+		h = -1; /* Hantera mångtydigheten hos klammer */
+	}
+	if ( h > -1 && h < c ) {
+		ti = ti.substr(0, h-1);
+	}
+	else if ( b > -1 && ( c === -1 || b < c ) ) {
+		ti = ti.substr(0, b-3);
+	}
+	else if ( c > -1 ) {
+		ti = ti.substr(0, c-3);			
+	}
+	else if ( n > -1 ) {
+		ti = ti.substr(0, n-1);			
+	}
+
+	
+	// Sätt egenskaper
+	this.main = ti;
+	this.sub = subTi;
+	this.original = origTi;
+	this.part = part;
+}
+/* Diverse funktioner */
+/**********************/
+
+/* Konverterar 10-siffrigt ISBN till 13-siffrigt */
+function convert10to13(isbn) {
+	var isbn13_prefix = "978";
+	var str = isbn13_prefix.concat(isbn.substr(0,9));
+	var arr = str.split("");
+		  
+	var i = 0;
+	var sum = 0;
+	for (i=0;i<arr.length;i++) {
+		var x = 3;
+		if(i%2 === 0) {
+			x = 1;
+			sum += arr[i] * x;
+		}
+	}
+	cdigit = 10 - sum%10;
+		
+	return str + cdigit;
 }
 
-SearchResult.prototype.init = function() {
-	/* Den här funktionen borde kunna ta inställningar */
-	$('.arena-library-record').each(function() {
-		var libraryRecord = new CatalogueRecord(this,'record');
-		libraryRecord.truncateTitle();
-		//libraryRecord.getSmakprov('list');
-	});
+/* Konverterar 13-siffrigt ISBN till 10-siffrigt */
+function convert13to10(isbn) {
+	var str = isbn.substr(3,9);
+	var arr = str.split("");
+		  
+	var i = 0;
+	var x = 10;
+	var sum = 0;
+	for (i=0;i<arr.length;i++,x--) {
+		sum += arr[i] * x;
+	}
+	cdigit = 11 - sum%11;
+	if ( cdigit === 11 ) { cdigit = 0; }
+	if ( cdigit === 10 ) { cdigit = "X"; }
+		
+	return str + cdigit;
 }
 
-SearchResult.prototype.smakprov = function() {
-	/* .arena-library-record.each återkommer */
+/* Trunkera bokbeskrivningar och annat */
+function truncate(text, length, ellipsis) {    
+
+    // Set length and ellipsis to defaults if not defined
+    if (typeof length === 'undefined') { 
+		var length = 100;
+	}
+    if (typeof ellipsis === 'undefined') { 
+		var ellipsis = '[...]';
+	}
+
+    // Return if the text is already lower than the cutoff
+    if (text.length < length) {
+		return text;
+	}
+
+    // Otherwise, check if the last character is a space.
+    // If not, keep counting down from the last character
+    // until we find a character that is a space
+    for (var i = length-1; text.charAt(i) !== ' '; i--) {
+        length--;
+    }
+
+    // The for() loop ends when it finds a space, and the length var
+    // has been updated so it doesn't cut in the middle of a word.
+    return text.substr(0, length) + ellipsis;
 }
 
-SearchResult.prototype.dvdCovers = function() {
-}
-
-
-
-
-
-'use strict';
-
-var arenajs = require('../lib/arenajs.js');
-
-/*
-  ======== A Handy Little Nodeunit Reference ========
-  https://github.com/caolan/nodeunit
-
-  Test methods:
-    test.expect(numAssertions)
-    test.done()
-  Test assertions:
-    test.ok(value, [message])
-    test.equal(actual, expected, [message])
-    test.notEqual(actual, expected, [message])
-    test.deepEqual(actual, expected, [message])
-    test.notDeepEqual(actual, expected, [message])
-    test.strictEqual(actual, expected, [message])
-    test.notStrictEqual(actual, expected, [message])
-    test.throws(block, [error], [message])
-    test.doesNotThrow(block, [error], [message])
-    test.ifError(value)
-*/
-
-exports['awesome'] = {
-  setUp: function(done) {
-    // setup here
-    done();
-  },
-  'no args': function(test) {
-    test.expect(1);
-    // tests here
-    test.equal(arenajs.awesome(), 'awesome', 'should be awesome.');
-    test.done();
-  }
-};

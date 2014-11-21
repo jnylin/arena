@@ -83,60 +83,40 @@ function CatalogueRecord(e,selector) {
 	}	
 	if ( isbn ) {
 		this.isbn = isbn;
-	}	
+	}
+	
+	/* Priviligerade funktioner */
+	this.getSelector = function() {
+		return selector;
+	};
 
 	console.log(this);
-	console.log(this.author);	
 }
 
-// Metoder
+
+/***********/
+/* Metoder */
+/***********/
 CatalogueRecord.prototype.decorate = function() {
 };
+
+CatalogueRecord.prototype.hideField = function(field) {
+	$('.arena-'+this.getSelector()+'-'+field).hide();
+};
+
 CatalogueRecord.prototype.removeMediumFromTitle = function() {
 	var obj = this.subElements.title;
 	obj.text(((obj.text().replace(/\[.*\] ([\/:])/,'$1'))));
+	// UNDERTITEL!!!
 };
+
 CatalogueRecord.prototype.truncateTitle = function() {
-	var title = new Title( this.title );
-	this.subElements.title.html( truncate(title.main + " " + title.part, 30) );
+	this.subElements.title.html( truncate(this.title.main + " " + this.title.part, 30) );
 };
+
 CatalogueRecord.prototype.getSmakprov = function(view) {
 	// view: Från katalogpost-sidna eller från en träfflista?
 	// detail eller list
 	var smakprov = new Smakprov(this.isbn, view); 
-};
-
-
-/* Smakprov */
-
-Smakprov = function(isbn, callback) {
-	var that = this;
-	this.isbn = isbn;
-	
-	$.getJSON('/smakprov/v1/records?isbn=' + this.isbn, that.callback(this, callback));	
-	
-};
-
-Smakprov.prototype.callback = function(obj, type) {
-	return function(records) {
-		if ( records.length > 0 ) {
-			console.log("type = " + type);
-			console.log("smakprov på " + obj.getUrl() );
-	
-			switch (type) {
-				case 'detail':
-					appendExternalRes(obj.getUrl(),"Smakprov","Läs ett smakprov av boken","_blank","btnRead");				
-					break;
-				case 'list':
-					// Utveckla det här, sätt sedan den här delen i produktion
-					break;
-			}
-		
-		}
-	};
-};
-
-Smakprov.prototype.getUrl = function() {
-	return 'http://www.smakprov.se/smakprov.php?isbn=' + this.isbn + '&l=vimmerby';
 };
 

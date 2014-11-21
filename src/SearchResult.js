@@ -12,31 +12,29 @@
  
 function SearchResult() {
 	/*portlet-listRecordSearchResult*/
-	/*portlet-queryRecordSerachResult*/
+	/*portlet-queryRecordSearchResult*/
 	
 	this.init();
-	/*Wicket.Ajax.registerPostCallHandler(function () { 
+	Wicket.Ajax.registerPostCallHandler(function () { 
 		this.init();
-	});	*/
+	});
 
 }
 
 SearchResult.prototype.init = function() {
 	/* Den här funktionen borde kunna ta inställningar */
+	/* selector?? element?? */
 	$('.arena-library-record').each(function() {
 		var libraryRecord = new CatalogueRecord(this,'record');
 		libraryRecord.truncateTitle();
+		libraryRecord.hideField('isbn');
 		//libraryRecord.getSmakprov('list');
 	});
-}
+};
 
 SearchResult.prototype.smakprov = function() {
 	/* .arena-library-record.each återkommer */
-}
+};
 
 SearchResult.prototype.dvdCovers = function() {
-}
-
-
-
-
+};

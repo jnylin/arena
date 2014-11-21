@@ -2,6 +2,10 @@ function Title(str,origTi) {
 	var h, b, n, ti, subTi, part;
 	ti = str;
 	origTi = origTi || ti;
+	
+	console.log("ti = " + ti);
+	console.log(ti);
+	console.log("ti.search = " + ti.search);
 
 	// "Klipp ut" undertitel, delbeteckning och huvudtitel!!
 	h = ti.search("\\[");    // Medieterm
@@ -52,13 +56,13 @@ function Title(str,origTi) {
 	}
 			
 	// Titel
-	if ( h == n )  {
+	if ( h === n )  {
 		h = -1; /* Hantera mångtydigheten hos klammer */
 	}
 	if ( h > -1 && h < c ) {
 		ti = ti.substr(0, h-1);
 	}
-	else if ( b > -1 && ( c == -1 || b < c ) ) {
+	else if ( b > -1 && ( c === -1 || b < c ) ) {
 		ti = ti.substr(0, b-3);
 	}
 	else if ( c > -1 ) {
