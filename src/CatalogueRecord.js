@@ -109,9 +109,9 @@ CatalogueRecord.prototype.hideField = function(field) {
 };
 
 CatalogueRecord.prototype.removeMediumFromTitle = function() {
+	// Tar bort allmän medieterm från den utskrivna titeln
 	var obj = this.subElements.title;
 	obj.text(((obj.text().replace(/\[.*\] ([\/:])/,'$1'))));
-	// UNDERTITEL!!!
 };
 
 CatalogueRecord.prototype.truncateTitle = function() {
