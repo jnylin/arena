@@ -114,6 +114,14 @@ function CatalogueRecord(e, selector, view) {
 /***********/
 /* Metoder */
 /***********/
+CatalogueRecord.prototype.addLinkToExtRes() {
+	try {
+		if ( this.view !== 'detail' ) throw 'This is only possible from the detail-view';
+	}
+	catch(err) {
+		console.log(err);
+	}
+}
 CatalogueRecord.prototype.decorate = function(view, decoration) {
 	/* view: detail eller list,
 	         d.v.s. katalogpostsida eller träfflista 
