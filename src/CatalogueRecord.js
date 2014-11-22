@@ -12,9 +12,11 @@
 	
 */
 function CatalogueRecord(e, selector, view) {
+
+	/*var selector,
+		pattYear = new RegExp("[0-9]{4}", "i"),
+		title, originalTitle, author, publisher, year, isbns, isbn, media, lang;*/
 	
-	//var title, originalTitle, author, publisher, year, isbns, isbn, media, lang;
-	//var pattYear = new RegExp("[0-9]{4}", "i");
 	var s;
 
 	// Sätt selector utifrån view
@@ -122,6 +124,7 @@ CatalogueRecord.prototype.addLinkToExtRes() {
 		console.log(err);
 	}
 }
+
 CatalogueRecord.prototype.decorate = function(view, decoration) {
 	/* view: detail eller list,
 	         d.v.s. katalogpostsida eller träfflista 
