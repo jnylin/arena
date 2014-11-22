@@ -11,7 +11,24 @@
 	youtubeTrailer
 	
 */
-function CatalogueRecord(e,selector) {
+function CatalogueRecord(e, selector, view) {
+	
+	//var title, originalTitle, author, publisher, year, isbns, isbn, media, lang;
+	//var pattYear = new RegExp("[0-9]{4}", "i");
+	var s;
+
+	// Sätt selector utifrån view
+	this.view = view;
+	
+	switch (view) {
+		case 'detail':
+			s = detail;
+			break;
+		case 'list':
+			s = record;
+			break;
+	}
+
 	/* HTML-element */
 	this.element = e;
 	this.subElements = {
@@ -60,7 +77,7 @@ function CatalogueRecord(e,selector) {
 		}
 	}
 
-	/* Egenskaper för objektet */
+	/* Egenskaper för katalogposten */
 	this.title = new Title(title, originalTitle);
 	if ( author ) {
 		this.author = {
