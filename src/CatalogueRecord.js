@@ -119,7 +119,7 @@ function CatalogueRecord(e, selector, view) {
 CatalogueRecord.prototype.addLinkToExtRes = function() {
 	try {
 		if ( this.view !== 'detail' ) {
-			throw 'This is only possible from the detail-view';
+			throw 'Only possible from the detail-view';
 		}
 	}
 	catch(err) {
@@ -127,11 +127,16 @@ CatalogueRecord.prototype.addLinkToExtRes = function() {
 	}
 };
 
-CatalogueRecord.prototype.decorate = function(view, decoration) {
-	/* view: detail eller list,
-             d.v.s. katalogpostsida eller träfflista 
-
-       decoration: funktion eller mervärde att lägga till */	 
+CatalogueRecord.prototype.advertise = function(value) {
+	// value (str)
+	try {
+		if ( this.view !== 'list' ) {
+			throw 'Only possible from the list-view';
+		}
+	}
+	catch(err) {
+		console.log(err);
+	}
 };
 
 CatalogueRecord.prototype.hideField = function(field) {
