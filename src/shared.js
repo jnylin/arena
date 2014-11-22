@@ -49,10 +49,10 @@ function truncate(text, length, ellipsis) {
 
     // Set length and ellipsis to defaults if not defined
     if (typeof length === 'undefined') { 
-		var length = 100;
+		length = 100;
 	}
     if (typeof ellipsis === 'undefined') { 
-		var ellipsis = '[...]';
+		ellipsis = '[...]';
 	}
 
     // Return if the text is already lower than the cutoff

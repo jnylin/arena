@@ -14,7 +14,7 @@ Smakprov.prototype.callback = function(obj, type) {
 	
 			switch (type) {
 				case 'detail':
-					appendExternalRes(obj.getUrl(),"Smakprov","Läs ett smakprov av boken","_blank","btnRead");				
+					//appendExternalRes(obj.getUrl(),"Smakprov","Läs ett smakprov av boken","_blank","btnRead");				
 					break;
 				case 'list':
 					// Utveckla det här, sätt sedan den här delen i produktion

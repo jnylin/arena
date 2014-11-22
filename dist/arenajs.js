@@ -1,7 +1,26 @@
-/*! arenajs - v0.1.0 - 2014-11-21
+/*! arenajs - v0.1.0 - 2014-11-22
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
-function CatalogueRecord(e,selector) {
+function CatalogueRecord(e, selector, view) {
+
+	/*var selector,
+		pattYear = new RegExp("[0-9]{4}", "i"),
+		title, originalTitle, author, publisher, year, isbns, isbn, media, lang;*/
+	
+	var s;
+
+	// Sätt selector utifrån view
+	this.view = view;
+	
+	switch (view) {
+		case 'detail':
+			s = 'detail';
+			break;
+		case 'list':
+			s = 'record';
+			break;
+	}
+
 	/* HTML-element */
 	this.element = e;
 	this.subElements = {
@@ -26,7 +45,7 @@ function CatalogueRecord(e,selector) {
 	media = this.subElements.media.text();
 	lang = this.subElements.lang.text().trim();
 	
-	/* 	ISBN är olika uppmärkt i träfflistan och katalogpostsidan
+    /*	ISBN är olika uppmärkt i träfflistan och katalogpostsidan
 		.arena-value för record, .arena-value span för detail	*/
 	switch (selector) {
 		case "record":
@@ -50,7 +69,7 @@ function CatalogueRecord(e,selector) {
 		}
 	}
 
-	/* Egenskaper för objektet */
+	/* Egenskaper för katalogposten */
 	this.title = new Title(title, originalTitle);
 	if ( author ) {
 		this.author = {
@@ -87,7 +106,22 @@ function CatalogueRecord(e,selector) {
 /***********/
 /* Metoder */
 /***********/
-CatalogueRecord.prototype.decorate = function() {
+CatalogueRecord.prototype.addLinkToExtRes = function() {
+	try {
+		if ( this.view !== 'detail' ) {
+			throw 'This is only possible from the detail-view';
+		}
+	}
+	catch(err) {
+		console.log(err);
+	}
+};
+
+CatalogueRecord.prototype.decorate = function(view, decoration) {
+	/* view: detail eller list,
+             d.v.s. katalogpostsida eller träfflista 
+
+       decoration: funktion eller mervärde att lägga till */	 
 };
 
 CatalogueRecord.prototype.hideField = function(field) {
@@ -95,9 +129,9 @@ CatalogueRecord.prototype.hideField = function(field) {
 };
 
 CatalogueRecord.prototype.removeMediumFromTitle = function() {
+	// Tar bort allmän medieterm från titel-elementet
 	var obj = this.subElements.title;
 	obj.text(((obj.text().replace(/\[.*\] ([\/:])/,'$1'))));
-	// UNDERTITEL!!!
 };
 
 CatalogueRecord.prototype.truncateTitle = function() {
@@ -157,7 +191,7 @@ Smakprov.prototype.callback = function(obj, type) {
 	
 			switch (type) {
 				case 'detail':
-					appendExternalRes(obj.getUrl(),"Smakprov","Läs ett smakprov av boken","_blank","btnRead");				
+					//appendExternalRes(obj.getUrl(),"Smakprov","Läs ett smakprov av boken","_blank","btnRead");				
 					break;
 				case 'list':
 					// Utveckla det här, sätt sedan den här delen i produktion
@@ -171,8 +205,9 @@ Smakprov.prototype.callback = function(obj, type) {
 Smakprov.prototype.getUrl = function() {
 	return 'http://www.smakprov.se/smakprov.php?isbn=' + this.isbn + '&l=vimmerby';
 };
+
 function Title(str,origTi) {
-	var h, b, n, ti, subTi, part;
+	var h, b, c, n, ti, subTi, part;
 	ti = str;
 	origTi = origTi || ti;
 	
@@ -182,8 +217,8 @@ function Title(str,origTi) {
 
 	// "Klipp ut" undertitel, delbeteckning och huvudtitel!!
 	h = ti.search("\\[");    // Medieterm
-	b = ti.search(" :");	     // Undertitel
-	c = ti.search("/");		 // Upphov
+	b = ti.search(" :");     // Undertitel
+	c = ti.search("/");      // Upphov
 	// Delbeteckning
 	n = ti.search("\\[?(P\\.|Season|Series)"); // Behöver få fram säsongsnummer!
 	
@@ -252,17 +287,20 @@ function Title(str,origTi) {
 	this.original = origTi;
 	this.part = part;
 }
+
 /* Diverse funktioner */
 /**********************/
 
 /* Konverterar 10-siffrigt ISBN till 13-siffrigt */
 function convert10to13(isbn) {
-	var isbn13_prefix = "978";
-	var str = isbn13_prefix.concat(isbn.substr(0,9));
-	var arr = str.split("");
-		  
-	var i = 0;
-	var sum = 0;
+	var isbn13_prefix = "978",
+		str = isbn13_prefix.concat(isbn.substr(0,9)),
+		arr = str.split("");
+ 
+	var i = 0,
+		sum = 0,
+		cdigit;
+
 	for (i=0;i<arr.length;i++) {
 		var x = 3;
 		if(i%2 === 0) {
@@ -270,6 +308,7 @@ function convert10to13(isbn) {
 			sum += arr[i] * x;
 		}
 	}
+
 	cdigit = 10 - sum%10;
 		
 	return str + cdigit;
@@ -277,12 +316,13 @@ function convert10to13(isbn) {
 
 /* Konverterar 13-siffrigt ISBN till 10-siffrigt */
 function convert13to10(isbn) {
-	var str = isbn.substr(3,9);
-	var arr = str.split("");
-		  
-	var i = 0;
-	var x = 10;
-	var sum = 0;
+	var str = isbn.substr(3,9),
+		arr = str.split("");
+ 
+	var i = 0,
+		x = 10,
+		sum = 0,
+		cdigit;
 	for (i=0;i<arr.length;i++,x--) {
 		sum += arr[i] * x;
 	}
@@ -298,10 +338,10 @@ function truncate(text, length, ellipsis) {
 
     // Set length and ellipsis to defaults if not defined
     if (typeof length === 'undefined') { 
-		var length = 100;
+		length = 100;
 	}
     if (typeof ellipsis === 'undefined') { 
-		var ellipsis = '[...]';
+		ellipsis = '[...]';
 	}
 
     // Return if the text is already lower than the cutoff

@@ -1,5 +1,5 @@
 function Title(str,origTi) {
-	var h, b, n, ti, subTi, part;
+	var h, b, c, n, ti, subTi, part;
 	ti = str;
 	origTi = origTi || ti;
 	
@@ -9,8 +9,8 @@ function Title(str,origTi) {
 
 	// "Klipp ut" undertitel, delbeteckning och huvudtitel!!
 	h = ti.search("\\[");    // Medieterm
-	b = ti.search(" :");	     // Undertitel
-	c = ti.search("/");		 // Upphov
+	b = ti.search(" :");     // Undertitel
+	c = ti.search("/");      // Upphov
 	// Delbeteckning
 	n = ti.search("\\[?(P\\.|Season|Series)"); // Behöver få fram säsongsnummer!
 	

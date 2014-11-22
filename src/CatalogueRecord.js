@@ -24,10 +24,10 @@ function CatalogueRecord(e, selector, view) {
 	
 	switch (view) {
 		case 'detail':
-			s = detail;
+			s = 'detail';
 			break;
 		case 'list':
-			s = record;
+			s = 'record';
 			break;
 	}
 
@@ -55,7 +55,7 @@ function CatalogueRecord(e, selector, view) {
 	media = this.subElements.media.text();
 	lang = this.subElements.lang.text().trim();
 	
-	/* 	ISBN är olika uppmärkt i träfflistan och katalogpostsidan
+    /*	ISBN är olika uppmärkt i träfflistan och katalogpostsidan
 		.arena-value för record, .arena-value span för detail	*/
 	switch (selector) {
 		case "record":
@@ -116,20 +116,22 @@ function CatalogueRecord(e, selector, view) {
 /***********/
 /* Metoder */
 /***********/
-CatalogueRecord.prototype.addLinkToExtRes() {
+CatalogueRecord.prototype.addLinkToExtRes = function() {
 	try {
-		if ( this.view !== 'detail' ) throw 'This is only possible from the detail-view';
+		if ( this.view !== 'detail' ) {
+			throw 'This is only possible from the detail-view';
+		}
 	}
 	catch(err) {
 		console.log(err);
 	}
-}
+};
 
 CatalogueRecord.prototype.decorate = function(view, decoration) {
 	/* view: detail eller list,
-	         d.v.s. katalogpostsida eller träfflista 
+             d.v.s. katalogpostsida eller träfflista 
 
-	   decoration: funktion eller mervärde att lägga till */	 
+       decoration: funktion eller mervärde att lägga till */	 
 };
 
 CatalogueRecord.prototype.hideField = function(field) {
