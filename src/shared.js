@@ -4,12 +4,14 @@
 
 /* Konverterar 10-siffrigt ISBN till 13-siffrigt */
 function convert10to13(isbn) {
-	var isbn13_prefix = "978";
-	var str = isbn13_prefix.concat(isbn.substr(0,9));
-	var arr = str.split("");
-		  
-	var i = 0;
-	var sum = 0;
+	var isbn13_prefix = "978",
+		str = isbn13_prefix.concat(isbn.substr(0,9)),
+		arr = str.split("");
+ 
+	var i = 0,
+		sum = 0,
+		cdigit;
+
 	for (i=0;i<arr.length;i++) {
 		var x = 3;
 		if(i%2 === 0) {
@@ -17,6 +19,7 @@ function convert10to13(isbn) {
 			sum += arr[i] * x;
 		}
 	}
+
 	cdigit = 10 - sum%10;
 		
 	return str + cdigit;
@@ -24,12 +27,13 @@ function convert10to13(isbn) {
 
 /* Konverterar 13-siffrigt ISBN till 10-siffrigt */
 function convert13to10(isbn) {
-	var str = isbn.substr(3,9);
-	var arr = str.split("");
-		  
-	var i = 0;
-	var x = 10;
-	var sum = 0;
+	var str = isbn.substr(3,9),
+		arr = str.split("");
+ 
+	var i = 0,
+		x = 10,
+		sum = 0,
+		cdigit;
 	for (i=0;i<arr.length;i++,x--) {
 		sum += arr[i] * x;
 	}
