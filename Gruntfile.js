@@ -32,7 +32,7 @@ module.exports = function(grunt) {
       },
       liferay: {
         expand: true,
-        src: ['liferay/*.js', '!liferay/article.js'],
+        src: ['liferay/*.js', '!liferay/*_dynamicTitle.js'],
 		dest: 'dist/',
 		ext: '.min.js',
 		extDot: 'first'
