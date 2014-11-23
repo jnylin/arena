@@ -1,22 +1,21 @@
 /*! arenajs - v0.1.0 - 2014-11-23
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
-function CatalogueRecord(e, selector, view) {
+function CatalogueRecord(e, view) {
 
-	var	pattYear = new RegExp("[0-9]{4}", "i"),
+	var	selector, 
+		pattYear = new RegExp("[0-9]{4}", "i"),
 		title, originalTitle, author, publisher, year, isbns, isbn, media, lang;
 	
-	var s;
-
 	// Sätt selector utifrån view
 	this.view = view;
 	
 	switch (view) {
 		case 'detail':
-			s = 'detail';
+			selector = 'detail';
 			break;
 		case 'list':
-			s = 'record';
+			selector = 'record';
 			break;
 	}
 
@@ -167,7 +166,7 @@ SearchResult.prototype.init = function() {
 	/* Den här funktionen borde kunna ta inställningar */
 	/* selector?? element?? */
 	$('.arena-library-record').each(function() {
-		var libraryRecord = new CatalogueRecord(this,'record', 'list');
+		var libraryRecord = new CatalogueRecord(this, 'list');
 		libraryRecord.truncateTitle();
 		libraryRecord.hideField('isbn');
 		//libraryRecord.getSmakprov('list');

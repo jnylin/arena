@@ -25,7 +25,7 @@ SearchResult.prototype.init = function() {
 	/* Den här funktionen borde kunna ta inställningar */
 	/* selector?? element?? */
 	$('.arena-library-record').each(function() {
-		var libraryRecord = new CatalogueRecord(this,'record', 'list');
+		var libraryRecord = new CatalogueRecord(this, 'list');
 		libraryRecord.truncateTitle();
 		libraryRecord.hideField('isbn');
 		//libraryRecord.getSmakprov('list');
