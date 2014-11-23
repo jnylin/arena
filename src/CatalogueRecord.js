@@ -13,8 +13,7 @@
 */
 function CatalogueRecord(e, selector, view) {
 
-	var	selector = selector,
-		pattYear = new RegExp("[0-9]{4}", "i"),
+	var	pattYear = new RegExp("[0-9]{4}", "i"),
 		title, originalTitle, author, publisher, year, isbns, isbn, media, lang;
 	
 	var s;
@@ -147,7 +146,11 @@ CatalogueRecord.prototype.removeMediumFromTitle = function() {
 };
 
 CatalogueRecord.prototype.truncateTitle = function() {
-	this.subElements.title.html( truncate(this.title.main + " " + this.title.part, 30) );
+	var title = this.title.main;
+	if ( this.title.part ) {
+		title += ' ' + this.title.part;
+	}
+	this.subElements.title.html( truncate(title, 30) );
 };
 
 CatalogueRecord.prototype.getSmakprov = function(view) {

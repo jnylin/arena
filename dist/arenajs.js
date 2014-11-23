@@ -3,9 +3,8 @@
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
 function CatalogueRecord(e, selector, view) {
 
-	/*var selector,
-		pattYear = new RegExp("[0-9]{4}", "i"),
-		title, originalTitle, author, publisher, year, isbns, isbn, media, lang;*/
+	var	pattYear = new RegExp("[0-9]{4}", "i"),
+		title, originalTitle, author, publisher, year, isbns, isbn, media, lang;
 	
 	var s;
 
@@ -34,10 +33,7 @@ function CatalogueRecord(e, selector, view) {
 		lang: $('.arena-'+selector+'-language .arena-value',this.element)
 	};
 
-	var pattYear = new RegExp("[0-9]{4}", "i");
-	
 	/* Hämta rätt värden från elementen */
-	var title, originalTitle, author, publisher, year, isbns, isbn, media, lang;
 	title = this.subElements.title.text().trim();
 	author = this.subElements.author.text();	
 	publisher = this.subElements.publisher.text();
@@ -140,7 +136,11 @@ CatalogueRecord.prototype.removeMediumFromTitle = function() {
 };
 
 CatalogueRecord.prototype.truncateTitle = function() {
-	this.subElements.title.html( truncate(this.title.main + " " + this.title.part, 30) );
+	var title = this.title.main;
+	if ( this.title.part ) {
+		title += ' ' + this.title.part;
+	}
+	this.subElements.title.html( truncate(title, 30) );
 };
 
 CatalogueRecord.prototype.getSmakprov = function(view) {
@@ -167,7 +167,7 @@ SearchResult.prototype.init = function() {
 	/* Den här funktionen borde kunna ta inställningar */
 	/* selector?? element?? */
 	$('.arena-library-record').each(function() {
-		var libraryRecord = new CatalogueRecord(this,'record');
+		var libraryRecord = new CatalogueRecord(this,'record', 'list');
 		libraryRecord.truncateTitle();
 		libraryRecord.hideField('isbn');
 		//libraryRecord.getSmakprov('list');
@@ -180,6 +180,7 @@ SearchResult.prototype.smakprov = function() {
 
 SearchResult.prototype.dvdCovers = function() {
 };
+
 function Smakprov(isbn, callback) {
 	// Använd CatalogueRecord som argument
 	// objektet har isbn och view
