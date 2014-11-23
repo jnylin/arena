@@ -13,9 +13,9 @@
 */
 function CatalogueRecord(e, selector, view) {
 
-	/*var selector,
+	var	selector = selector,
 		pattYear = new RegExp("[0-9]{4}", "i"),
-		title, originalTitle, author, publisher, year, isbns, isbn, media, lang;*/
+		title, originalTitle, author, publisher, year, isbns, isbn, media, lang;
 	
 	var s;
 
@@ -44,10 +44,7 @@ function CatalogueRecord(e, selector, view) {
 		lang: $('.arena-'+selector+'-language .arena-value',this.element)
 	};
 
-	var pattYear = new RegExp("[0-9]{4}", "i");
-	
 	/* Hämta rätt värden från elementen */
-	var title, originalTitle, author, publisher, year, isbns, isbn, media, lang;
 	title = this.subElements.title.text().trim();
 	author = this.subElements.author.text();	
 	publisher = this.subElements.publisher.text();
