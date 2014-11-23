@@ -30,9 +30,16 @@ module.exports = function(grunt) {
         src: '<%= concat.dist.dest %>',
         dest: 'dist/<%= pkg.name %>.min.js'
       },
+      liferay: {
+        expand: true,
+        src: ['liferay/*.js'],
+		dest: 'dist/',
+		ext: '.min.js',
+		extDot: 'first'
+      }
     },
     jshint: {
-      files: ['Gruntfile.js','src/**/*.js'],
+      files: ['Gruntfile.js','src/**/*.js', 'liferay/*.js'],
       options: {
         jshintrc: '.jshintrc'
       },
