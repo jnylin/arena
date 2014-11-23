@@ -16,7 +16,7 @@ The arenajs-lib is used in Axiell Arena which is based on the CMS Liferay. The s
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
-__Also, please don't edit files in the "dist" subdirectory as they are generated via Grunt. You'll find source code in the "lib" subdirectory! The "liferay" subdirectory contains examples how to use the lib in Axiell Arena which is based on the CMS Liferay.
+_Also, please don't edit files in the "dist" subdirectory as they are generated via Grunt. You'll find source code in the "lib" subdirectory! The "liferay" subdirectory contains examples how to use the lib in Axiell Arena which is based on the CMS Liferay._
 
 
 ## License
