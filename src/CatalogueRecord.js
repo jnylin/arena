@@ -116,7 +116,7 @@ function CatalogueRecord(e, selector, view) {
 /***********/
 /* Metoder */
 /***********/
-CatalogueRecord.prototype.addLinkToExtRes = function() {
+CatalogueRecord.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, target, cssClass) {
 	try {
 		if ( this.view !== 'detail' ) {
 			throw 'Only possible from the detail-view';
