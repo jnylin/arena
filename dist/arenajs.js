@@ -178,26 +178,21 @@ CatalogueRecord.prototype.advertise = function(value) {
 	console.log("Det finns " + value + " för " + this.isbn);
 };
 
-/* Relationen träfflista - post; i träfflistan finns poster */
+// TESTA på dynamiska listor!
  
 function SearchResult(e) {
-	/*portlet-listRecordSearchResult*/
-	/*portlet-queryRecordSearchResult*/
-
-	console.log(e.find('.arena-library-record'));
 	
-	this.init();
+	this.init(e);
 	Wicket.Ajax.registerPostCallHandler(function () { 
-		this.init();
+		this.init(e);
 	});
 
 }
 
-SearchResult.prototype.init = function() {
-	/* Den här funktionen borde kunna ta inställningar */
-	/* selector?? element?? */
-	/* element.find('.arena-library-record').each */
-	$('.arena-library-record').each(function() {
+SearchResult.prototype.init = function(e) {
+	/* Borde den här funktionen kunna ta inställningar?
+	 * Fält att gömma? Funktioner att lägga till? */
+	e.find('.arena-library-record').each(function() {
 		var libraryRecord = new CatalogueRecord(this, 'list');
 		libraryRecord.truncateTitle();
 		if ( libraryRecord.isbn ) {
