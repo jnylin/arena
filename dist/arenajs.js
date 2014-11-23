@@ -101,6 +101,34 @@ function CatalogueRecord(e, view) {
 /***********/
 /* Metoder */
 /***********/
+
+// Mervärden
+CatalogueRecord.prototype.addSmakprov = function() {
+	new Smakprov(this);
+};
+
+// Modifiera visningen av katalogposten
+CatalogueRecord.prototype.hideField = function(field) {
+	$('.arena-'+this.getSelector()+'-'+field).hide();
+};
+
+CatalogueRecord.prototype.removeMediumFromTitle = function() {
+	// Tar bort allmän medieterm från titel-elementet
+	var obj = this.subElements.title;
+	obj.text(((obj.text().replace(/\[.*\] ([\/:])/,'$1'))));
+};
+
+CatalogueRecord.prototype.truncateTitle = function() {
+	var title = this.title.main;
+
+	if ( this.title.part ) {
+		title += ' ' + this.title.part;
+	}
+
+	this.subElements.title.html( truncate(title, 30) );
+};
+
+// Visa mervärden
 CatalogueRecord.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, target, cssClass) {
 	try {
 		if ( this.view !== 'detail' ) {
@@ -150,36 +178,13 @@ CatalogueRecord.prototype.advertise = function(value) {
 	console.log("Det finns " + value + " för " + this.isbn);
 };
 
-CatalogueRecord.prototype.hideField = function(field) {
-	$('.arena-'+this.getSelector()+'-'+field).hide();
-};
-
-CatalogueRecord.prototype.removeMediumFromTitle = function() {
-	// Tar bort allmän medieterm från titel-elementet
-	var obj = this.subElements.title;
-	obj.text(((obj.text().replace(/\[.*\] ([\/:])/,'$1'))));
-};
-
-CatalogueRecord.prototype.truncateTitle = function() {
-	var title = this.title.main;
-	if ( this.title.part ) {
-		title += ' ' + this.title.part;
-	}
-	this.subElements.title.html( truncate(title, 30) );
-};
-
-CatalogueRecord.prototype.getSmakprov = function() {
-	// view: Från katalogpost-sidna eller från en träfflista?
-	// detail eller list
-	var smakprov = new Smakprov(this); 
-};
-
-
 /* Relationen träfflista - post; i träfflistan finns poster */
  
-function SearchResult() {
+function SearchResult(e) {
 	/*portlet-listRecordSearchResult*/
 	/*portlet-queryRecordSearchResult*/
+
+	console.log(e.find('.arena-library-record'));
 	
 	this.init();
 	Wicket.Ajax.registerPostCallHandler(function () { 
@@ -191,19 +196,17 @@ function SearchResult() {
 SearchResult.prototype.init = function() {
 	/* Den här funktionen borde kunna ta inställningar */
 	/* selector?? element?? */
+	/* element.find('.arena-library-record').each */
 	$('.arena-library-record').each(function() {
 		var libraryRecord = new CatalogueRecord(this, 'list');
 		libraryRecord.truncateTitle();
-		libraryRecord.hideField('isbn');
-		libraryRecord.getSmakprov();
+		if ( libraryRecord.isbn ) {
+			libraryRecord.hideField('isbn');
+			if ( libraryRecord.media === 'Bok' ) {
+				libraryRecord.addSmakprov();
+			}
+		}
 	});
-};
-
-SearchResult.prototype.smakprov = function() {
-	/* .arena-library-record.each återkommer */
-};
-
-SearchResult.prototype.dvdCovers = function() {
 };
 
 function Smakprov(catalogueRecord) {

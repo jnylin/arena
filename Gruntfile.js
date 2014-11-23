@@ -39,7 +39,7 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
-      files: ['Gruntfile.js','src/**/*.js', 'liferay/*.js'],
+      files: ['Gruntfile.js','lib/**/*.js', 'liferay/*.js'],
       options: {
         jshintrc: '.jshintrc'
       },
