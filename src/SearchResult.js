@@ -28,7 +28,7 @@ SearchResult.prototype.init = function() {
 		var libraryRecord = new CatalogueRecord(this, 'list');
 		libraryRecord.truncateTitle();
 		libraryRecord.hideField('isbn');
-		//libraryRecord.getSmakprov('list');
+		libraryRecord.getSmakprov();
 	});
 };
 

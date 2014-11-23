@@ -132,6 +132,8 @@ CatalogueRecord.prototype.advertise = function(value) {
 	catch(err) {
 		console.log(err);
 	}
+
+	console.log("Det finns " + value);
 };
 
 CatalogueRecord.prototype.hideField = function(field) {
@@ -152,9 +154,9 @@ CatalogueRecord.prototype.truncateTitle = function() {
 	this.subElements.title.html( truncate(title, 30) );
 };
 
-CatalogueRecord.prototype.getSmakprov = function(view) {
+CatalogueRecord.prototype.getSmakprov = function() {
 	// view: Från katalogpost-sidna eller från en träfflista?
 	// detail eller list
-	var smakprov = new Smakprov(this.isbn, view); 
+	var smakprov = new Smakprov(this); 
 };
 
