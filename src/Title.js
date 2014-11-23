@@ -3,10 +3,6 @@ function Title(str,origTi) {
 	ti = str;
 	origTi = origTi || ti;
 	
-	console.log("ti = " + ti);
-	console.log(ti);
-	console.log("ti.search = " + ti.search);
-
 	// "Klipp ut" undertitel, delbeteckning och huvudtitel!!
 	h = ti.search("\\[");    // Medieterm
 	b = ti.search(" :");     // Undertitel
