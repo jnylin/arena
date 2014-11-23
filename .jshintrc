@@ -11,6 +11,7 @@
   "boss": true,
   "eqnull": true,
   "node": true,
+  "browser": true,
   "jquery": true,
   "predef": [ "Wicket", "CatalogueRecord", "SearchResult", "Smakprov", "Title", "truncate" ]
 }

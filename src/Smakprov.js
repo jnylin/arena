@@ -19,8 +19,7 @@ Smakprov.prototype.callback = function(thisObj, view) {
 	
 			switch (view) {
 				case 'detail':
-					// Använd CatalogueRecord.addLnkToExtRes
-					//appendExternalRes(obj.getUrl(),"Smakprov","Läs ett smakprov av boken","_blank","btnRead");				
+					thisObj.getCatalogueRecord().addLnkToExtRes(thisObj.getUrl(), 'Smakprov', 'Läs ett smakprov av boken', '_blank', 'btnRead');
 					break;
 				case 'list':
 					thisObj.getCatalogueRecord().advertise('Smakprov');

@@ -120,6 +120,30 @@ CatalogueRecord.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, targe
 	catch(err) {
 		console.log(err);
 	}
+
+	var a = document.createElement('a');
+
+	a.setAttribute('href', url);
+	if ( lnkTitle ) {
+		a.setAttribute('title', lnkTitle);
+	}
+	else {
+		lnkTitle = '';
+	}
+	if ( target ) {
+		a.setAttribute('target', target);
+	} 
+	else {
+		a.setAttribute('target', '_blank');
+		a.setAttribute('title', lnkTitle + ' (Öppnas i nytt fönster)');
+	}
+	if ( cssClass ) {
+		a.setAttribute('class', cssClass);
+	}
+	a.innerHTML = lnkTxt;
+
+	$('#extRes').append(a);
+
 };
 
 CatalogueRecord.prototype.advertise = function(value) {
@@ -133,7 +157,7 @@ CatalogueRecord.prototype.advertise = function(value) {
 		console.log(err);
 	}
 
-	console.log("Det finns " + value);
+	console.log("Det finns " + value + " för " + this.isbn);
 };
 
 CatalogueRecord.prototype.hideField = function(field) {
