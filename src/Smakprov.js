@@ -1,4 +1,6 @@
 function Smakprov(isbn, callback) {
+	// Använd CatalogueRecord som argument
+	// objektet har isbn och view
 	var that = this;
 	this.isbn = isbn;
 	
@@ -14,9 +16,11 @@ Smakprov.prototype.callback = function(obj, type) {
 	
 			switch (type) {
 				case 'detail':
+					// Använd CatalogueRecord.addLnkToExtRes
 					//appendExternalRes(obj.getUrl(),"Smakprov","Läs ett smakprov av boken","_blank","btnRead");				
 					break;
 				case 'list':
+					// CatalogueRecord.advertise('Smakprov')
 					// Utveckla det här, sätt sedan den här delen i produktion
 					break;
 			}
