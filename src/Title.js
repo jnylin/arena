@@ -75,7 +75,11 @@ function Title(str,origTi) {
 	
 	// Sätt egenskaper
 	this.main = ti;
-	this.sub = subTi;
+	if ( subTi !== '' ) {
+		this.sub = subTi;
+	}
 	this.original = origTi;
-	this.part = part;
+	if ( part !== '' ) {
+		this.part = part;
+	}
 }

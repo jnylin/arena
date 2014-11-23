@@ -1,4 +1,4 @@
-/*! arenajs - v0.1.0 - 2014-11-22
+/*! arenajs - v0.1.0 - 2014-11-23
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
 function CatalogueRecord(e, selector, view) {
@@ -106,10 +106,10 @@ function CatalogueRecord(e, selector, view) {
 /***********/
 /* Metoder */
 /***********/
-CatalogueRecord.prototype.addLinkToExtRes = function() {
+CatalogueRecord.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, target, cssClass) {
 	try {
 		if ( this.view !== 'detail' ) {
-			throw 'This is only possible from the detail-view';
+			throw 'Only possible from the detail-view';
 		}
 	}
 	catch(err) {
@@ -117,11 +117,16 @@ CatalogueRecord.prototype.addLinkToExtRes = function() {
 	}
 };
 
-CatalogueRecord.prototype.decorate = function(view, decoration) {
-	/* view: detail eller list,
-             d.v.s. katalogpostsida eller träfflista 
-
-       decoration: funktion eller mervärde att lägga till */	 
+CatalogueRecord.prototype.advertise = function(value) {
+	// value (str)
+	try {
+		if ( this.view !== 'list' ) {
+			throw 'Only possible from the list-view';
+		}
+	}
+	catch(err) {
+		console.log(err);
+	}
 };
 
 CatalogueRecord.prototype.hideField = function(field) {
@@ -176,6 +181,8 @@ SearchResult.prototype.smakprov = function() {
 SearchResult.prototype.dvdCovers = function() {
 };
 function Smakprov(isbn, callback) {
+	// Använd CatalogueRecord som argument
+	// objektet har isbn och view
 	var that = this;
 	this.isbn = isbn;
 	
@@ -191,9 +198,11 @@ Smakprov.prototype.callback = function(obj, type) {
 	
 			switch (type) {
 				case 'detail':
+					// Använd CatalogueRecord.addLnkToExtRes
 					//appendExternalRes(obj.getUrl(),"Smakprov","Läs ett smakprov av boken","_blank","btnRead");				
 					break;
 				case 'list':
+					// CatalogueRecord.advertise('Smakprov')
 					// Utveckla det här, sätt sedan den här delen i produktion
 					break;
 			}
@@ -283,9 +292,13 @@ function Title(str,origTi) {
 	
 	// Sätt egenskaper
 	this.main = ti;
-	this.sub = subTi;
+	if ( subTi !== '' ) {
+		this.sub = subTi;
+	}
 	this.original = origTi;
-	this.part = part;
+	if ( part !== '' ) {
+		this.part = part;
+	}
 }
 
 /* Diverse funktioner */
