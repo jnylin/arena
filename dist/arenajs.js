@@ -1,4 +1,4 @@
-/*! arenajs - v0.1.0 - 2014-11-23
+/*! arenajs - v0.1.0 - 2014-11-25
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
 function CatalogueRecord(e, view) {
@@ -22,14 +22,16 @@ function CatalogueRecord(e, view) {
 	/* HTML-element */
 	this.element = e;
 	this.subElements = {
-		title: $('.arena-'+selector+'-title span:not(.arena-result-item-number)',this.element),
-		originalTitle: $('.arena-detail-original .arena-value',this.element),
-		author: $('.arena-'+selector+'-author .arena-value',this.element),
-		publisher: $('.arena-record-publisher .arena-value',this.element),		
-		year: $('.arena-'+selector+'-year .arena-value',this.element),
-		isbns: $('.arena-'+selector+'-isbn .arena-value',this.element),
-		media: $('.arena-'+selector+'-media .arena-value',this.element),
-		lang: $('.arena-'+selector+'-language .arena-value',this.element)
+		title: $('.arena-'+selector+'-title span:not(.arena-result-item-number)', this.element),
+		originalTitle: $('.arena-detail-original .arena-value', this.element),
+		author: $('.arena-'+selector+'-author .arena-value', this.element),
+		publisher: $('.arena-record-publisher .arena-value', this.element),		
+		year: $('.arena-'+selector+'-year .arena-value', this.element),
+		isbns: $('.arena-'+selector+'-isbn .arena-value', this.element),
+		media: $('.arena-'+selector+'-media .arena-value', this.element),
+		lang: $('.arena-'+selector+'-language .arena-value', this.element),
+		cover: $('.arena-'+selector+'-cover', this.element),
+		bookJacket: $('.arena-book-jacket', this.element) // länken och bilden ligger i .arena-book-jacket
 	};
 
 	/* Hämta rätt värden från elementen */
@@ -165,7 +167,7 @@ CatalogueRecord.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, targe
 };
 
 CatalogueRecord.prototype.advertise = function(value) {
-	// value (str)
+	// value (str): Mervärde att locka med
 	try {
 		if ( this.view !== 'list' ) {
 			throw 'Only possible from the list-view';
@@ -174,8 +176,15 @@ CatalogueRecord.prototype.advertise = function(value) {
 	catch(err) {
 		console.log(err);
 	}
-
-	console.log("Det finns " + value + " för " + this.isbn);
+	
+	var a = this.subElements.cover.find('a');
+	
+	if ( a.find('ul.values').length === 0 ) {
+		a.append('<ul class="values"></ul>');
+	}
+	
+	a.find('ul.values').append('<li>' + value + '</li>');
+	
 };
 
 // TESTA på dynamiska listor!
