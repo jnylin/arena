@@ -1,24 +1,30 @@
-/*! arenajs - v0.1.0 - 2014-11-25
+/*! arenajs - v0.1.0 - 2014-11-26
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
 function CatalogueRecord(e, view) {
 
 	var	selector, 
 		pattYear = new RegExp("[0-9]{4}", "i"),
+		methodsOnThisView,
 		title, originalTitle, author, publisher, year, isbns, isbn, media, lang;
 	
-	// Sätt selector utifrån view
+	// Sätt selector utifrån view och hämta specifika metoder
 	this.view = view;
 	
 	switch (view) {
 		case 'detail':
 			selector = 'detail';
+			methodsOnThisView = new DetailViewMethods(this);
 			break;
 		case 'list':
 			selector = 'record';
+			methodsOnThisView = new ListViewMethods(this);
 			break;
 	}
-
+	
+	console.log("methodOnThisView = ");
+	console.log(methodsOnThisView);
+	
 	/* HTML-element */
 	this.element = e;
 	this.subElements = {
@@ -91,6 +97,9 @@ function CatalogueRecord(e, view) {
 		this.isbn = isbn;
 	}
 	
+	/* Egenskaper för mervärden */
+	this.methodsOnThisView = methodsOnThisView;
+	
 	/* Priviligerade funktioner */
 	this.getSelector = function() {
 		return selector;
@@ -103,11 +112,6 @@ function CatalogueRecord(e, view) {
 /***********/
 /* Metoder */
 /***********/
-
-// Mervärden
-CatalogueRecord.prototype.addSmakprov = function() {
-	new Smakprov(this);
-};
 
 // Modifiera visningen av katalogposten
 CatalogueRecord.prototype.hideField = function(field) {
@@ -130,8 +134,25 @@ CatalogueRecord.prototype.truncateTitle = function() {
 	this.subElements.title.html( truncate(title, 30) );
 };
 
-// Visa mervärden
-CatalogueRecord.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, target, cssClass) {
+// Mervärden
+CatalogueRecord.prototype.smakprov = function() {
+	new Smakprov(this);
+};
+
+function DetailViewMethods(record) {
+	try {
+		if ( record.view !== 'detail' ) {
+			throw 'Only possible from the detail-view';
+		}
+	}
+	catch(err) {
+		console.log(err);
+	}
+}
+
+DetailViewMethods.prototype.addAudioPlayer = function (audioUrl,linkTxt,linkTitle) {
+};
+/*CatalogueRecord.prototype.addAudioPlayer = function (audioUrl,linkTxt,linkTitle) {
 	try {
 		if ( this.view !== 'detail' ) {
 			throw 'Only possible from the detail-view';
@@ -141,6 +162,31 @@ CatalogueRecord.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, targe
 		console.log(err);
 	}
 
+		//console.log("audioUrl = " + audioUrl);
+
+		// initiera spelare
+		$("#audioplayer").jPlayer({
+			ready: function () {
+				$(this).jPlayer("setMedia", { 
+					mp3: audioUrl
+				});
+
+			},
+			swfPath: "http://bibliotek.vimmerby.se/documents/58068/137602/Jplayer.swf/82ba0888-e101-438a-a73b-92f31bdc5f74"
+		});
+		
+		// Lägg till länk
+		appendExternalRes("#jp_container_1",linkTxt,linkTitle,"_self",'btnPlay');		
+
+
+		// OBS!! id
+		$(".btnPlay").click( function() {
+			$("#audioplayer").jPlayer("play");
+			$("#jp_container_1").show("slow");
+		});
+}*/
+
+DetailViewMethods.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, target, cssClass) {
 	var a = document.createElement('a');
 
 	a.setAttribute('href', url);
@@ -163,13 +209,35 @@ CatalogueRecord.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, targe
 	a.innerHTML = lnkTxt;
 
 	$('#extRes').append(a);
-
 };
 
-CatalogueRecord.prototype.advertise = function(value) {
-	// value (str): Mervärde att locka med
+/*DetailViewMethods.prototype.addYoutubeMovie(id) {
+}*/
+/*CatalogueRecord.prototype.addYoutubeMovie(id) {
+	// 	Lägger till en youtube-film till sidan
+	//	Argument: youtube-id
 	try {
-		if ( this.view !== 'list' ) {
+		if ( this.view !== 'detail' ) {
+			throw 'Only possible from the detail-view';
+		}
+	}
+	catch(err) {
+		console.log(err);
+	}
+
+	// url = baseUrl + id + ?rel=0
+	var baseUrl, width, height;
+	baseUrl = "http://www.youtube-nocookie.com/embed/";
+	width = "560";
+	height = "315";
+	
+	// Lägg till youtube-filmen till sidan
+	$('#youtube').prepend('<iframe width="' + width + '" height="' + height + '" src="' + baseUrl + id + '?rel=0" frameborder="0" allowfullscreen></iframe>');
+	$('#youtube').show();
+}*/
+function ListViewMethods(record) {
+	try {
+		if ( record.view !== 'list' ) {
 			throw 'Only possible from the list-view';
 		}
 	}
@@ -177,16 +245,20 @@ CatalogueRecord.prototype.advertise = function(value) {
 		console.log(err);
 	}
 	
-	var a = this.subElements.cover.find('a');
+	this.record = record;
+}
+
+ListViewMethods.prototype.advertise = function(value) {
+	// value (str): Mervärde att locka med
+	
+	var a = this.record.subElements.cover.find('a');
 	
 	if ( a.find('ul.values').length === 0 ) {
 		a.append('<ul class="values"></ul>');
 	}
 	
-	a.find('ul.values').append('<li>' + value + '</li>');
-	
+	a.find('ul.values').append('<li>' + value + '</li>');	
 };
-
 // TESTA på dynamiska listor!
  
 function SearchResult(e) {
@@ -207,7 +279,7 @@ SearchResult.prototype.init = function(e) {
 		if ( libraryRecord.isbn ) {
 			libraryRecord.hideField('isbn');
 			if ( libraryRecord.media === 'Bok' ) {
-				libraryRecord.addSmakprov();
+				libraryRecord.smakprov();
 			}
 		}
 	});
@@ -234,10 +306,12 @@ Smakprov.prototype.callback = function(thisObj, view) {
 	
 			switch (view) {
 				case 'detail':
-					thisObj.getCatalogueRecord().addLnkToExtRes(thisObj.getUrl(), 'Smakprov', 'Läs ett smakprov av boken', '_blank', 'btnRead');
+					thisObj.getCatalogueRecord().methodsOnThisView.addLnkToExtRes(thisObj.getUrl(), 'Smakprov', 'Läs ett smakprov av boken', '_blank', 'btnRead');
 					break;
 				case 'list':
-					thisObj.getCatalogueRecord().advertise('Smakprov');
+					console.log("thisObj.getCatalogueRecord() =");				
+					console.log(thisObj.getCatalogueRecord());
+					thisObj.getCatalogueRecord().methodsOnThisView.advertise('Smakprov');
 					break;
 			}
 		
