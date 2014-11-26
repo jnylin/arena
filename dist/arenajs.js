@@ -155,17 +155,6 @@ function DetailViewMethods(record) {
 }
 
 DetailViewMethods.prototype.addAudioPlayer = function (audioUrl,linkTxt,linkTitle) {
-};
-/*CatalogueRecord.prototype.addAudioPlayer = function (audioUrl,linkTxt,linkTitle) {
-	try {
-		if ( this.view !== 'detail' ) {
-			throw 'Only possible from the detail-view';
-		}
-	}
-	catch(err) {
-		console.log(err);
-	}
-
 		//console.log("audioUrl = " + audioUrl);
 
 		// initiera spelare
@@ -180,7 +169,7 @@ DetailViewMethods.prototype.addAudioPlayer = function (audioUrl,linkTxt,linkTitl
 		});
 		
 		// Lägg till länk
-		appendExternalRes("#jp_container_1",linkTxt,linkTitle,"_self",'btnPlay');		
+		this.addLnkToExtRes("#jp_container_1",linkTxt,linkTitle,"_self",'btnPlay');		
 
 
 		// OBS!! id
@@ -188,7 +177,7 @@ DetailViewMethods.prototype.addAudioPlayer = function (audioUrl,linkTxt,linkTitl
 			$("#audioplayer").jPlayer("play");
 			$("#jp_container_1").show("slow");
 		});
-}*/
+};
 
 DetailViewMethods.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, target, cssClass) {
 	var a = document.createElement('a');
@@ -218,7 +207,7 @@ DetailViewMethods.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, tar
 /*DetailViewMethods.prototype.addYoutubeMovie(id) {
 }*/
 /*CatalogueRecord.prototype.addYoutubeMovie(id) {
-	// 	Lägger till en youtube-film till sidan
+    // Lägger till en youtube-film till sidan
 	//	Argument: youtube-id
 	try {
 		if ( this.view !== 'detail' ) {
@@ -239,6 +228,7 @@ DetailViewMethods.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, tar
 	$('#youtube').prepend('<iframe width="' + width + '" height="' + height + '" src="' + baseUrl + id + '?rel=0" frameborder="0" allowfullscreen></iframe>');
 	$('#youtube').show();
 }*/
+
 function ListViewMethods(record) {
 	try {
 		if ( record.view !== 'list' ) {
@@ -264,24 +254,32 @@ ListViewMethods.prototype.advertise = function(value) {
 	a.find('ul.values').append('<li>' + value + '</li>');	
 };
 function Ljudprov(catalogueRecord) {
-	var that = this;
 
-	//url: "http://pipes.yahoo.com/pipes/pipe.run?_id=21ebd265e688111bc604d76d2bfb2841&_render=json&author=" + au.lastname + "&title=" + title.main + "&_callback=ljudprov",
 	$.ajax({
 		type: "GET",
-		url: "http://pipes.yahoo.com/pipes/pipe.run?_id=21ebd265e688111bc604d76d2bfb2841&_render=json&author=" + catalogueRecord.author.lastname + "&title=" + catalogueRecord.title.main,
+		url: "http://pipes.yahoo.com/pipes/pipe.run?_id=21ebd265e688111bc604d76d2bfb2841&_render=json&author=" + catalogueRecord.author.lastname + "&title=" + catalogueRecord.title.main + "&_callback=?",
 		dataType: "jsonp",
+		cache: true,
 		success: function(json) {
-			console.log(json);
-			
-			/*if (json.count == 1 && json.value.items[0].hit == 1) {
-			var audioUrl = "http://www.elib.se/sample_new/audio/ISBN" + convert13to10(json.value.items[0].isbn) + ".mp3";
-		
-			audioPlayer(audioUrl,"Provlyssna","Ett kort provlyssningsavsnitt");*/
+			// obs! röret ger "hit": "1"	
+			if (json.count === 1 && json.value.items[0].hit === "1") {
+				var audioUrl = "http://www.elib.se/sample_new/audio/ISBN" + convert13to10(json.value.items[0].isbn) + ".mp3";
+
+				switch (catalogueRecord.view) {
+					case 'detail':
+						catalogueRecord.methodsOnThisView.addAudioPlayer(audioUrl, 'Provlyssna', 'Lyssna på inledningen av boken');
+						break;
+					case 'list':
+						catalogueRecord.methodsOnThisView.advertise('Provlyssna');
+						break;
+				}
+
+			}
 		}
 	});	
 
 }
+
 // TESTA på dynamiska listor!
  
 function SearchResult(e) {

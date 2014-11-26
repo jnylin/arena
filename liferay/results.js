@@ -3,27 +3,12 @@
 var pattYear = new RegExp("[0-9]{4}", "i");
 var pattResChar = new RegExp(/[&+,\/:;=?@"]/g);
 
-/*function bokpuffen(json) {
-	if ( json.count >= 1 ) {
-		items = json.value.items;
-		if ( items.length === 1 ) {
-			title = items[0].title;
-			title = title.replace("&aring;","å").replace("&#246;","ö");
-			author = items[0].author.replace("&aring;","å").replace("&#246;","ö");
-			audioUrl = items[0]["media:content"].url;
-
-			
-			audioPlayer(audioUrl,"Bokpuffen","Lyssna på bokens inledning");
-
-		}
-	}
-}*/
-
 function boktipset(json) {
 	//HTML-tags
 	var uList = '<ul></ul>',
 		openListItem = '<li><a href="',
-		openBlockQuote = '<blockquote><p>';
+		openBlockQuote = '<blockquote><p>',
+		_comments, _reviews, listOfPapers, i;
 	// Kommentarer
 	if ( json.answer.comments.bookcomments ) {
 		_comments=json.answer.comments.bookcomments.bookcomment;
@@ -66,7 +51,7 @@ function boktipset(json) {
         $("#papers").append(uList);
 		listOfPapers = document.getElementById("papers").getElementsByTagName("ul")[0];
 		if ( _reviews.item instanceof Array ) {
-			for (i=0;i<=_reviews.item.length-1;i++) {
+			for (i=0; i < _reviews.item.length - 1; i++) {
 				listOfPapers.innerHTML += openListItem + _reviews.item[i].link.substr(24) + '" target="_blank">' + _reviews.item[i].source + '</a></li>';
 			}
 		}
@@ -92,75 +77,6 @@ function boktipset(json) {
 	}*/
 }
 
-function bokvideo(youtubeChannel,ti,au,query) {
-	var channel, video, test;
-	channel = youtubeChannel;
-	query = query || ti + "+" + au.lastname;
-		
-	$.ajax({
-		type: "GET",
-		url: "https://gdata.youtube.com/feeds/api/videos?v=2&alt=jsonc&author=" + channel + "&max-results=1&q=" + query,
-		dataType: "jsonp",
-		success: function(json) {
-			if ( json.data.totalItems > 0 ) {
-				video = json.data.items[0];
-				
-				// Bestäm testvillkor
-				if ( channel === "BarnensBibliotek" ) {
-					test = video.title.indexOf(au.firstname + " " + au.lastname) > -1;
-				}
-				else {
-					test = video.title.indexOf(ti) > -1 || video.title.indexOf(au.lastname) > -1;
-				}
-				
-				// Lägg till filmen
-				if ( test ) {
-					addYoutubeMovie(video.id);
-
-					// Lägg till en knapp
-					appendExternalRes('#youtube','Bokvideo','Se en bokvideo','_self','btnPlay');
-					
-				}
-				
-			}
-		}
-	});
-}
-
-function youtubeTrailer(movie,callback,lang) {
-	/*	Hämtar en youtubeTrailer från TMDb:s API 
-		Argument: film som finns hos TMDb,
-				  funktion som hanterar api-svaret,
-				  språk att söka på */
-	var id;
-    movie = movie;
-    lang = lang || "sv";
-    id = "";
-    
-    $.ajax({
-		type: "GET",
-		url: "http://api.themoviedb.org/3/movie/"+movie.id+"/trailers?api_key="+movie.apiKey+"&language="+lang,
-		dataType: "jsonp",
-		context: movie.id,
-		success: function(json) {
-
-			id = movie.getYoutubeId(json,this,lang);
-
-			if ( id === "" && lang === "sv" ) {
-				youtubeTrailer(movie,addYoutubeMovie,"en");
-			}
-	    
-			if ( id !== "" ) {
-				addYoutubeMovie(id);
-				// Lägg till en knapp
-				appendExternalRes('#youtube','Trailer','Se filmens trailer','_self','btnPlay');
-			}
-
-		}
-    });
-    
-}
-
 /*****************/
 // Main
 /*****************/
@@ -181,7 +97,7 @@ $(function() {
 
 			$.ajax({
 				type: "GET",
-				url: "http://bibliotek.vimmerby.se/documents/58068/138011/arenajs.min.js/ce0740d4-a718-4217-aa67-55035d95f6eb",
+				url: "http://bibliotek.vimmerby.se/documents/58068/138011/arenajs.js/9bfc30c9-c4fb-4b11-adee-7238838f4e9d",
 				datatype: "script",
 				cache: true,
 				success: function() {
@@ -210,9 +126,7 @@ $(function() {
 						
 								// Bort med ISBN
 								$(".arena-detail-isbn").hide();
-								
-								// Snyggare länk till Elib
-		    
+
 
 								/************************************/
 								/* Funktioner oberoende av medietyp */
@@ -233,7 +147,7 @@ $(function() {
 									});				
 			
 									// Smakprov/Provläs
-									record.getSmakprov('detail');
+									record.smakprov();
 							
 								}
 			
@@ -242,22 +156,17 @@ $(function() {
 								if ( record.media === "Bok" || record.media === "E-bok" ) {
 
 									// Bokpuffen
-									$.ajax({
-										type: "GET",
-										url: "http://pipes.yahoo.com/pipes/pipe.run?_id=a69b13c13ba656e4023b3b336c1bb1c3&_render=json&key=getpuff&title="+record.title.main.replace('å','a').replace('ä','a').replace('ö','o')+"&_callback=bokpuffen",
-										dataType: "jsonp"
-									});
 
 									// Bokvideor
 									switch (record.publisher) {
 										case "R&S":
-											bokvideo("rabensjogren",record.title.main,record.author);
+											//bokvideo("rabensjogren",record.title.main,record.author);
 											break;
 										case "BW":
-											bokvideo("FormaBooks",record.title.main,record.author);
+											//bokvideo("FormaBooks",record.title.main,record.author);
 											break;
 										case "Damm":
-											bokvideo("FormaBooks",record.title.main,record.author);
+											//bokvideo("FormaBooks",record.title.main,record.author);
 											break;
 									}				
 				
@@ -267,7 +176,7 @@ $(function() {
 								}
 								else if ( record.media.toLowerCase().indexOf("ljudbok") > -1 ) {
 									// Ljudbok, MP3; Ljudbok, CD; E-ljudbok
-									//console.log("Ljudbok");
+									console.log("Ljudbok");
 				
 									// Provlyssning
 									// Sök med titel ti och författare au
@@ -329,7 +238,6 @@ $(function() {
 									$('.arena-availability').hide();
 								}*/
 			
-		    
 							}
 						});
 					});

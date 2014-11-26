@@ -13,5 +13,5 @@
   "node": true,
   "browser": true,
   "jquery": true,
-  "predef": [ "Wicket", "CatalogueRecord", "DetailViewMethods", "ListViewMethods", "SearchResult", "Title", "truncate", "Smakprov", "Ljudprov" ]
+  "predef": [ "Wicket", "CatalogueRecord", "DetailViewMethods", "ListViewMethods", "SearchResult", "Title", "truncate", "Smakprov", "Ljudprov", "convert13to10" ]
 }
