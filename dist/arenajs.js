@@ -135,6 +135,10 @@ CatalogueRecord.prototype.truncateTitle = function() {
 };
 
 // Mervärden
+CatalogueRecord.prototype.ljudprov = function() {
+	new Ljudprov(this);
+};
+
 CatalogueRecord.prototype.smakprov = function() {
 	new Smakprov(this);
 };
@@ -259,6 +263,25 @@ ListViewMethods.prototype.advertise = function(value) {
 	
 	a.find('ul.values').append('<li>' + value + '</li>');	
 };
+function Ljudprov(catalogueRecord) {
+	var that = this;
+
+	//url: "http://pipes.yahoo.com/pipes/pipe.run?_id=21ebd265e688111bc604d76d2bfb2841&_render=json&author=" + au.lastname + "&title=" + title.main + "&_callback=ljudprov",
+	$.ajax({
+		type: "GET",
+		url: "http://pipes.yahoo.com/pipes/pipe.run?_id=21ebd265e688111bc604d76d2bfb2841&_render=json&author=" + catalogueRecord.author.lastname + "&title=" + catalogueRecord.title.main,
+		dataType: "jsonp",
+		success: function(json) {
+			console.log(json);
+			
+			/*if (json.count == 1 && json.value.items[0].hit == 1) {
+			var audioUrl = "http://www.elib.se/sample_new/audio/ISBN" + convert13to10(json.value.items[0].isbn) + ".mp3";
+		
+			audioPlayer(audioUrl,"Provlyssna","Ett kort provlyssningsavsnitt");*/
+		}
+	});	
+
+}
 // TESTA på dynamiska listor!
  
 function SearchResult(e) {
@@ -301,16 +324,12 @@ function Smakprov(catalogueRecord) {
 Smakprov.prototype.callback = function(thisObj, view) {
 	return function(records) {
 		if ( records.length > 0 ) {
-			console.log("type = " + view);
-			console.log("smakprov på " + thisObj.getUrl() );
 	
 			switch (view) {
 				case 'detail':
 					thisObj.getCatalogueRecord().methodsOnThisView.addLnkToExtRes(thisObj.getUrl(), 'Smakprov', 'Läs ett smakprov av boken', '_blank', 'btnRead');
 					break;
 				case 'list':
-					console.log("thisObj.getCatalogueRecord() =");				
-					console.log(thisObj.getCatalogueRecord());
 					thisObj.getCatalogueRecord().methodsOnThisView.advertise('Smakprov');
 					break;
 			}
