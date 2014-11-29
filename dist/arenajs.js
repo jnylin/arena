@@ -1,6 +1,9 @@
-/*! arenajs - v0.1.0 - 2014-11-26
+/*! arenajs - v0.1.0 - 2014-11-29
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
+
+
+
 function CatalogueRecord(e, view) {
 
 	var	selector, 
@@ -229,6 +232,7 @@ DetailViewMethods.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, tar
 	$('#youtube').show();
 }*/
 
+
 function ListViewMethods(record) {
 	try {
 		if ( record.view !== 'list' ) {
@@ -421,6 +425,7 @@ function Title(str,origTi) {
 		this.part = part;
 	}
 }
+
 
 /* Diverse funktioner */
 /**********************/
