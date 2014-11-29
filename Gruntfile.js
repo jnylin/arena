@@ -18,7 +18,7 @@ module.exports = function(grunt) {
         stripBanners: true
       },
       dist: {
-		src: ['lib/**/*.js'],
+		src: ['lib/**/*.js', '!lib/**/*.old.js'],
         dest: 'dist/<%= pkg.name %>.js'
       },
     },
@@ -32,14 +32,14 @@ module.exports = function(grunt) {
       },
       liferay: {
         expand: true,
-        src: ['liferay/*.js', '!liferay/*_dynamicTitle.js'],
+        src: ['liferay/*.js', '!liferay/*_dynamicTitle.js', '!liferay/*.old.js'],
 		dest: 'dist/',
 		ext: '.min.js',
 		extDot: 'first'
       }
     },
     jshint: {
-      files: ['Gruntfile.js','lib/**/*.js', 'liferay/*.js'],
+      files: ['Gruntfile.js','<%= concat.dist.src %>', '<%= uglify.liferay.src %>'],
       options: {
         jshintrc: '.jshintrc'
       },
