@@ -211,30 +211,19 @@ DetailViewMethods.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, tar
 	$('#extRes').append(a);
 };
 
-/*DetailViewMethods.prototype.addYoutubeMovie(id) {
-}*/
-/*CatalogueRecord.prototype.addYoutubeMovie(id) {
-    // Lägger till en youtube-film till sidan
-	//	Argument: youtube-id
-	try {
-		if ( this.view !== 'detail' ) {
-			throw 'Only possible from the detail-view';
-		}
-	}
-	catch(err) {
-		console.log(err);
-	}
-
+DetailViewMethods.prototype.addYoutubeMovie = function(id) {
+	// id = id hos youtube
 	// url = baseUrl + id + ?rel=0
-	var baseUrl, width, height;
-	baseUrl = "http://www.youtube-nocookie.com/embed/";
-	width = "560";
-	height = "315";
-	
+	console.log("addYoutubeMovie-id: " + id);
+	var baseUrl = "http://www.youtube-nocookie.com/embed/",
+		width = "560",
+		height = "315";
+
 	// Lägg till youtube-filmen till sidan
 	$('#youtube').prepend('<iframe width="' + width + '" height="' + height + '" src="' + baseUrl + id + '?rel=0" frameborder="0" allowfullscreen></iframe>');
 	$('#youtube').show();
-}*/
+	
+};
 
 function Dvd(record) {
 	this.record = record;
@@ -247,16 +236,17 @@ function Dvd(record) {
 	if ( record.title.sub ) {
 		query += ' ' + record.title.sub;
 	}
-		
+
+	console.log(tmdb);	
 	tmdb.search(query);
 
-	console.log(tmdb);
-	console.log(this);
 }
 
 Dvd.prototype.cover = function(tmdb) {
 	this.record.subElements.bookJacket.find('img').attr('src', tmdb.urlPoster);
-	this.record.subElements.cover.append('<a href="' + tmdb.url + '/' + tmdb.mediaType + '/' + tmdb.id + '?language=sv' + '" target="_blank" title="Information hos TMDb">themoviedb.org</a>');
+	if ( this.record.view === 'detail') {
+		this.record.subElements.cover.append('<a href="' + tmdb.url + '/' + tmdb.mediaType + '/' + tmdb.id + '?language=sv' + '" target="_blank" title="Information hos TMDb"><img src="http://bibliotek.vimmerby.se/' + tmdb.pathLogo + '" alt="themoviedb.org" /></a>');
+	}
 };
 
 function ListViewMethods(record) {
@@ -313,11 +303,13 @@ function Ljudprov(catalogueRecord) {
 // TESTA på dynamiska listor!
  
 function SearchResult(e) {
+
+	console.log("Nytt sökresultat");
 	
 	this.init(e);
-	Wicket.Ajax.registerPostCallHandler(function () { 
+	/*Wicket.Ajax.registerPostCallHandler(function () { 
 		this.init(e);
-	});
+	});*/
 
 }
 
@@ -327,12 +319,19 @@ SearchResult.prototype.init = function(e) {
 	e.find('.arena-library-record').each(function() {
 		var libraryRecord = new CatalogueRecord(this, 'list');
 		libraryRecord.truncateTitle();
+
 		if ( libraryRecord.isbn ) {
 			libraryRecord.hideField('isbn');
+
 			if ( libraryRecord.media === 'Bok' ) {
 				libraryRecord.smakprov();
 			}
 		}
+		
+		if ( libraryRecord.media === 'DVD' ) {
+			libraryRecord.dvd();
+		}
+
 	});
 };
 
@@ -524,20 +523,65 @@ Tmdb.prototype.searchCallback = function(thisObj) {
 			thisObj.id = movie.id;
 			thisObj.mediaType = 'movie';
 			thisObj.setUrlPoster(movie.poster_path);
+
+			thisObj.trailer();
 		}
 		else if ( tv ) {
 			thisObj.id = tv.id;
 			thisObj.mediaType = 'tv';
 			thisObj.setUrlPoster(tv.poster_path);
+
+			thisObj.tv(tv.id);
 		}
+
+		console.log("Resultat av search");
+		console.log(thisObj);
 
 		// Töm resultatarrayen för att kunna göra en ny sökning
 		arrResults.length = 0;
 		
 		// Sätt omslag med mera
 		thisObj.dvd.cover(thisObj);
+
 	};
 
+};
+
+Tmdb.prototype.trailer = function(lang) {
+	if ( typeof lang === 'undefined' ) {
+		lang = 'sv';
+	}
+
+    $.ajax({
+		type: "GET",
+		url: this.api + 'movie/' + this.id + '/trailers?api_key=' + this.apiKey + '&language=' + lang,
+		dataType: "jsonp",
+		success: this.trailerCallback(this, lang)
+	});
+};
+
+Tmdb.prototype.trailerCallback = function(thisObj, lang) {
+	return function(json) {
+		var id; 
+
+		if ( json.youtube.length > 0 ) {
+			id = json.youtube[0].source;
+		}
+
+		if ( typeof id === 'undefined' && lang === 'sv' ) {
+			thisObj.trailer('en');
+		}
+		else if ( id ) {
+			switch ( thisObj.dvd.record.view ) {
+				case 'detail':
+					thisObj.dvd.record.methodsOnThisView.addYoutubeMovie(id);
+					break;
+				case 'list':
+					thisObj.dvd.record.methodsOnThisView.advertise('Trailer');
+					break;
+			}
+		}
+	};
 };
 
 Tmdb.prototype.tv = function(id) {
@@ -558,8 +602,10 @@ Tmdb.prototype.tvCallback = function(thisObj, seasonNr) {
 			seasonNr = seasonNr - 1;
 		}		
 		tvSeason = json.seasons[seasonNr];
-			
-		thisObj.posterPath = tvSeason.poster_path;
+		
+		// Uppdatera omslaget	
+		thisObj.setUrlPoster(tvSeason.poster_path);
+		thisObj.dvd.cover(thisObj);
 	};
 };
 
