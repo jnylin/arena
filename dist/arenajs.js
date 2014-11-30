@@ -148,6 +148,7 @@ CatalogueRecord.prototype.ljudprov = function() {
 
 CatalogueRecord.prototype.smakprov = function() {
 	new Smakprov(this);
+	console.log("Ny smakprov-sökning");
 };
 
 function DetailViewMethods(record) {
@@ -307,9 +308,9 @@ function SearchResult(e) {
 	console.log("Nytt sökresultat");
 	
 	this.init(e);
-	/*Wicket.Ajax.registerPostCallHandler(function () { 
+	Wicket.Ajax.registerPostCallHandler(function () { 
 		this.init(e);
-	});*/
+	});
 
 }
 
@@ -322,10 +323,7 @@ SearchResult.prototype.init = function(e) {
 
 		if ( libraryRecord.isbn ) {
 			libraryRecord.hideField('isbn');
-
-			if ( libraryRecord.media === 'Bok' ) {
-				libraryRecord.smakprov();
-			}
+			libraryRecord.smakprov();
 		}
 		
 		if ( libraryRecord.media === 'DVD' ) {
