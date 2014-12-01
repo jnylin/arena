@@ -32,7 +32,7 @@ module.exports = function(grunt) {
       },
       liferay: {
         expand: true,
-        src: ['liferay/*.js', '!liferay/*_dynamicTitle.js', '!liferay/*.old.js'],
+        src: ['liferay/*.js', '!liferay/*_dynamicTitle.js', '!liferay/*.old.js', '!liferay/old/*'],
 		dest: 'dist/',
 		ext: '.min.js',
 		extDot: 'first'
@@ -61,7 +61,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
-  // Default task.
+  // Register tasks
   grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
+  grunt.registerTask('test', ['jshint']);
 
 };

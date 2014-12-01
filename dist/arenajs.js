@@ -1,4 +1,4 @@
-/*! arenajs - v0.1.0 - 2014-11-30
+/*! arenajs - v0.1.0 - 2014-12-01
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
 
@@ -24,9 +24,6 @@ function CatalogueRecord(e, view) {
 			methodsOnThisView = new ListViewMethods(this);
 			break;
 	}
-	
-	console.log("methodOnThisView = ");
-	console.log(methodsOnThisView);
 	
 	/* HTML-element */
 	this.element = e;
@@ -127,6 +124,10 @@ CatalogueRecord.prototype.removeMediumFromTitle = function() {
 	obj.text(((obj.text().replace(/\[.*\] ([\/:])/,'$1'))));
 };
 
+CatalogueRecord.prototype.trimTitle = function() {
+	this.subElements.title.html( this.title.main );
+};
+
 CatalogueRecord.prototype.truncateTitle = function() {
 	var title = this.title.main;
 
@@ -148,7 +149,6 @@ CatalogueRecord.prototype.ljudprov = function() {
 
 CatalogueRecord.prototype.smakprov = function() {
 	new Smakprov(this);
-	console.log("Ny smakprov-sökning");
 };
 
 function DetailViewMethods(record) {
@@ -301,25 +301,25 @@ function Ljudprov(catalogueRecord) {
 
 }
 
-// TESTA på dynamiska listor!
- 
-function SearchResult(e) {
+function SearchResult(e, options) {
 
-	console.log("Nytt sökresultat");
+	var settings = $.extend(this.settings, options);
 	
-	this.init(e);
-	Wicket.Ajax.registerPostCallHandler(function () { 
-		this.init(e);
-	});
+	this.init(e, settings);
 
 }
 
-SearchResult.prototype.init = function(e) {
-	/* Borde den här funktionen kunna ta inställningar?
-	 * Fält att gömma? Funktioner att lägga till? */
+SearchResult.prototype.init = function(e, settings) {
 	e.find('.arena-library-record').each(function() {
 		var libraryRecord = new CatalogueRecord(this, 'list');
-		libraryRecord.truncateTitle();
+
+		if ( settings.trimTitle ) {
+			libraryRecord.trimTitle();
+		}
+
+		if ( settings.truncate ) {
+			libraryRecord.truncateTitle();
+		}
 
 		if ( libraryRecord.isbn ) {
 			libraryRecord.hideField('isbn');
@@ -331,6 +331,11 @@ SearchResult.prototype.init = function(e) {
 		}
 
 	});
+};
+
+SearchResult.prototype.settings = {
+	trimTitle: true,
+	truncate: false
 };
 
 function Smakprov(catalogueRecord) {
