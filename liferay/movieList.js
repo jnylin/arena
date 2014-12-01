@@ -5,12 +5,16 @@
     datatype: 'script',
     cache: true,
     success: function() {
-		var cssClass = 'portlet-listRecordSearchResult';
-
-		new SearchResult($('.'+cssClass));
+		var cssClass = 'portlet-listRecordSearchResult',
+			settings = {
+				hideFields: ['media', 'year']
+			};
+		
+		new SearchResult($('.'+cssClass), settings);
 		Wicket.Ajax.registerPostCallHandler(function() {
-			new SearchResult($('.'+cssClass));
+			new SearchResult($('.'+cssClass), settings);
 		});
-	}
+
+    }
   });
 }(jQuery));

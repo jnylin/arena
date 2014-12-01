@@ -5,10 +5,15 @@
     datatype: 'script',
     cache: true,
     success: function() {
-      new SearchResult($('.portlet-listRecordSearchResult'), {truncate: true});
-      Wicket.Ajax.registerPostCallHandler(function() {
-	new SearchResult($('.portlet-listRecordSearchResult'), {truncate: true});
-      });
+		var cssClass = 'portlet-listRecordSearchResult',
+			settings = {
+				truncate: true
+			};
+
+		new SearchResult($('.'+cssClass), settings);
+		Wicket.Ajax.registerPostCallHandler(function() {
+			new SearchResult($('.'+cssClass), settings);
+		});
     }
   });
 }(jQuery));
