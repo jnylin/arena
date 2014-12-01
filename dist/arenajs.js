@@ -330,12 +330,17 @@ SearchResult.prototype.init = function(e, settings) {
 			libraryRecord.dvd();
 		}
 
+		$.each( settings.hideFields, function(i, field) {
+			libraryRecord.hideField(field);
+		});
+
 	});
 };
 
 SearchResult.prototype.settings = {
 	trimTitle: true,
-	truncate: false
+	truncate: false,
+	hideFields: []
 };
 
 function Smakprov(catalogueRecord) {
