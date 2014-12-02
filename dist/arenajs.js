@@ -334,6 +334,7 @@ SearchResult.prototype.init = function(e, settings) {
 			libraryRecord.dvd();
 		}
 
+		// Optional hiding of fields
 		$.each( settings.hideFields, function(i, field) {
 			libraryRecord.hideField(field);
 		});
@@ -480,11 +481,18 @@ Tmdb.prototype.search = function(query) {
 	console.log(this);
 	console.log("query = " + query);
 
+	var url = this.api + 'search/multi?api_key=' + this.apiKey + '&query=' + encodeURIComponent(query) + '&language=sv';
+	console.log("url = " + url);
+
 	$.ajax({
 		type: 'GET',
 		url: this.api + 'search/multi?api_key=' + this.apiKey + '&query=' + encodeURIComponent(query) + '&language=sv',
 		datatype: 'jsonp',
-		success: this.searchCallback(this)
+		success: this.searchCallback(this),
+		complete: function(jqXHR, textStatus) {
+			console.dir(jqXHR);
+			console.log("textStatus = " + textStatus);
+		}
 	});
 
 };
