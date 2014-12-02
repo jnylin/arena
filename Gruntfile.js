@@ -18,7 +18,7 @@ module.exports = function(grunt) {
         stripBanners: true
       },
       dist: {
-		src: ['lib/**/*.js', '!lib/**/*.old.js'],
+		src: ['lib/**/*.js', '!lib/**/*.template.js', '!lib/**/*.old.js'],
         dest: 'dist/<%= pkg.name %>.js'
       },
     },
@@ -39,12 +39,15 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
-      files: ['Gruntfile.js','<%= concat.dist.src %>', '<%= uglify.liferay.src %>'],
+      files: ['Gruntfile.js','<%= concat.dist.src %>'],
       options: {
         jshintrc: '.jshintrc'
       },
       gruntfile: {
         src: 'Gruntfile.js'
+      },
+      liferay: {
+		src: '<%= uglify.liferay.src %>'
       }
     },
     watch: {
@@ -63,6 +66,10 @@ module.exports = function(grunt) {
 
   // Register tasks
   grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
+  grunt.registerTask('lib', ['jshint:files', 'concat', 'uglify:dist']);
+  grunt.registerTask('liferay', ['jshint:liferay', 'uglify:liferay']);
   grunt.registerTask('test', ['jshint']);
+  grunt.registerTask('test:lib', ['jshint:files']);
+  grunt.registerTask('test:liferay', ['jshint:liferay']);
 
 };
