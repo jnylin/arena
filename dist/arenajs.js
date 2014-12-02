@@ -1,4 +1,4 @@
-/*! arenajs - v0.1.0 - 2014-12-01
+/*! arenajs - v0.1.0 - 2014-12-02
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
 
@@ -113,9 +113,13 @@ function CatalogueRecord(e, view) {
 /* Metoder */
 /***********/
 
+CatalogueRecord.prototype.fieldIsVisible = function(field) {
+	return $(this.element).find('.arena-'+this.getSelector()+'-'+field).is(':visible');
+};
+
 // Modifiera visningen av katalogposten
 CatalogueRecord.prototype.hideField = function(field) {
-	$('.arena-'+this.getSelector()+'-'+field).hide();
+	$(this.element).find('.arena-'+this.getSelector()+'-'+field).hide();
 };
 
 CatalogueRecord.prototype.removeMediumFromTitle = function() {
@@ -321,12 +325,12 @@ SearchResult.prototype.init = function(e, settings) {
 			libraryRecord.truncateTitle();
 		}
 
-		if ( libraryRecord.isbn ) {
+		if ( libraryRecord.isbn && libraryRecord.fieldIsVisible('isbn') ) {
 			libraryRecord.hideField('isbn');
 			libraryRecord.smakprov();
 		}
 		
-		if ( libraryRecord.media === 'DVD' ) {
+		if ( libraryRecord.media === 'DVD' && libraryRecord.fieldIsVisible('media') ) {
 			libraryRecord.dvd();
 		}
 
