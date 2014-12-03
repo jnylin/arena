@@ -1,4 +1,4 @@
-/*! arenajs - v0.1.0 - 2014-12-02
+/*! arenajs - v0.1.0 - 2014-12-03
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
 
@@ -233,6 +233,7 @@ DetailViewMethods.prototype.addYoutubeMovie = function(id) {
 function Dvd(record) {
 	this.record = record;
 
+	// API-nyckel som första argument till Tmdb
     var tmdb = new Tmdb('de9f79bfc08b502862e4d8bba5723414', this),
 		query;
 
