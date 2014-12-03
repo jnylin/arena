@@ -1,3 +1,4 @@
+/*global console: true */
 // console för Internet Explorer <10
 if ( ! window.console ) {
 	console = { log: function(){} };
@@ -35,14 +36,6 @@ if ( ! window.console ) {
 	
 }(jQuery));
 
-// Om Internet Explorer
-/*(function ($) {
-	if ( $('html').attr('class').match(/\b(ie9|ie8)\b/) ) {
-		console.log('Det här är en gammal Internet Explorer-version');
-		$.getScript('http://cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.3/jquery.xdomainrequest.min.js', function( data, textStatus, jqxhr ) {});
-	}
-}(jQuery));*/
-
 // För att undvika timeout
 (function ($) {
 	function omStart() {
@@ -50,7 +43,7 @@ if ( ! window.console ) {
 	}
 	
 	var millisec, timer;
-	millisec = 1500000; /* 	1 500 000 millisekunder = 1 500 sekunder = 25 minuter */
+	millisec = 1500000; /* 1 500 000 millisekunder = 1 500 sekunder = 25 minuter */
 	timer = setTimeout(omStart,millisec);
 
 	$("*").bind('keydown mousedown', function(omStart) {

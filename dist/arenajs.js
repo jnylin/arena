@@ -233,7 +233,6 @@ DetailViewMethods.prototype.addYoutubeMovie = function(id) {
 function Dvd(record) {
 	this.record = record;
 
-	// API-nyckel som första argument till Tmdb
     var tmdb = new Tmdb('de9f79bfc08b502862e4d8bba5723414', this),
 		query;
 
@@ -487,7 +486,7 @@ Tmdb.prototype.search = function(query) {
 
 	$.ajax({
 		type: 'GET',
-		url: this.api + 'search/multi?api_key=' + this.apiKey + '&query=' + encodeURIComponent(query) + '&language=sv',
+		url: this.api + 'search/multi?api_key=' + this.apiKey + '&query=' + encodeURIComponent(query) + '&language=sv&page=1&include_adult=false',
 		datatype: 'jsonp',
 		success: this.searchCallback(this),
 		complete: function(jqXHR, textStatus) {
