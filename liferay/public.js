@@ -1,8 +1,24 @@
 // console för Internet Explorer <10
-if ( ! window.console ) console = { log: function(){} };
+if ( ! window.console ) {
+	console = { log: function(){} };
+}
 
-// Plugins
-(function($) {
+// Utöka jQuery
+(function ($) {
+	$.cachedScript = function( url, options ) {
+		// Allow user to set any option except for dataType, cache, and url
+		options = $.extend( options || {}, {
+			dataType: "script",
+			cache: true,
+			url: url
+		});
+
+		// Use $.ajax() since it is more flexible than $.getScript
+
+		// Return the jqXHR object so we can chain callbacks
+		return jQuery.ajax( options );
+	};
+
     $.fn.changeElementType = function(newType) {
         var attrs = {};
 
@@ -15,7 +31,17 @@ if ( ! window.console ) console = { log: function(){} };
             return $("<" + newType + "/>", attrs).append($(this).contents());
         });
     };
-})(jQuery);
+	
+	
+}(jQuery));
+
+// Om Internet Explorer
+/*(function ($) {
+	if ( $('html').attr('class').match(/\b(ie9|ie8)\b/) ) {
+		console.log('Det här är en gammal Internet Explorer-version');
+		$.getScript('http://cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.3/jquery.xdomainrequest.min.js', function( data, textStatus, jqxhr ) {});
+	}
+}(jQuery));*/
 
 // För att undvika timeout
 (function ($) {
@@ -50,14 +76,18 @@ if ( ! window.console ) console = { log: function(){} };
 		//fix for IE7 - 9
 		if (!$.support.placeholder) {
 			$("[placeholder]").focus(function () {
-				if ($(this).val() == $(this).attr("placeholder")) $(this).val("");
+				if ($(this).val() === $(this).attr("placeholder")) {
+					$(this).val("");
+				}
 			}).blur(function () {
-				if ($(this).val() == "") $(this).val($(this).attr("placeholder"));
+				if ($(this).val() === "") {
+					$(this).val($(this).attr("placeholder"));
+				}
 			}).blur();
 	
 			$("[placeholder]").parents("form").submit(function () {
 				$(this).find('[placeholder]').each(function() {
-					if ($(this).val() == $(this).attr("placeholder")) {
+					if ($(this).val() === $(this).attr("placeholder")) {
 						$(this).val("");
 					}
 				});
