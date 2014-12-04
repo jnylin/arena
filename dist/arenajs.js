@@ -32,7 +32,7 @@ Bokvideo.prototype.getChannel = function() {
 
 };
 
-Bokvideo.prototype.searchFeed = function(channel) {
+Bokvideo.prototype.search = function(channel) {
 
 	var query =  this.record.title.main + "+" + this.record.author.lastname;
 
@@ -45,11 +45,11 @@ Bokvideo.prototype.searchFeed = function(channel) {
 
 };
 
-Bokvideo.prototype.searchCallback = function() {
+Bokvideo.prototype.searchCallback = function(thisObj) {
 	return function(json) {
 			if ( json.data.totalItems > 0 ) {
 				var video = json.data.items[0],
-					test = video.title.indexOf(this.record.title.main) > -1 || video.title.indexOf(this.record.author.lastname) > -1;
+					test = video.title.indexOf(thisObj.record.title.main) > -1 || video.title.indexOf(thisObj.record.author.lastname) > -1;
 
 		
 			// Barnens bibliotek??	
