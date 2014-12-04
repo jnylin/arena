@@ -1,4 +1,4 @@
-/*! arenajs - v0.1.0 - 2014-12-03
+/*! arenajs - v0.1.0 - 2014-12-04
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
 
@@ -105,7 +105,6 @@ function CatalogueRecord(e, view) {
 		return selector;
 	};
 
-	console.log(this);
 }
 
 
@@ -233,6 +232,7 @@ DetailViewMethods.prototype.addYoutubeMovie = function(id) {
 function Dvd(record) {
 	this.record = record;
 
+	// API-nyckel som första argument till Tmdb
     var tmdb = new Tmdb('de9f79bfc08b502862e4d8bba5723414', this),
 		query;
 
@@ -242,9 +242,7 @@ function Dvd(record) {
 		query += ' ' + record.title.sub;
 	}
 
-	console.log(tmdb);	
 	tmdb.search(query);
-
 }
 
 Dvd.prototype.cover = function(tmdb) {
@@ -483,11 +481,6 @@ Tmdb.prototype.posterSizes = [92, 154, 185, 342, 500, 780];
 
 // API-funktioner
 Tmdb.prototype.search = function(query) {
-	console.log(this);
-	console.log("query = " + query);
-
-	var url = this.api + 'search/multi?api_key=' + this.apiKey + '&query=' + encodeURIComponent(query) + '&language=sv';
-	console.log("url = " + url);
 
 	$.ajax({
 		type: 'GET',
@@ -495,8 +488,6 @@ Tmdb.prototype.search = function(query) {
 		datatype: 'jsonp',
 		success: this.searchCallback(this),
 		complete: function(jqXHR, textStatus) {
-			console.dir(jqXHR);
-			console.log("textStatus = " + textStatus);
 		}
 	});
 
@@ -558,10 +549,7 @@ Tmdb.prototype.searchCallback = function(thisObj) {
 
 			thisObj.tv(tv.id);
 		}
-
-		console.log("Resultat av search");
-		console.log(thisObj);
-
+		
 		// Töm resultatarrayen för att kunna göra en ny sökning
 		arrResults.length = 0;
 		
