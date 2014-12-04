@@ -3,6 +3,64 @@
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
 
 
+function Bokvideo(record) {
+	this.record = record;
+
+	this.search(this.getChannel());
+
+}
+
+Bokvideo.prototype.getChannel = function() {
+
+	var channel;
+
+	switch ( this.record.publisher ) {
+		case "R&S":
+			channel = "rabensjogren";
+			break;
+		case "BW":
+			channel = "FormaBooks";
+			break;
+		case "Damm":
+			channel = "FormaBooks";
+			break;
+		default:
+			break;
+	}
+
+	return channel;
+
+};
+
+Bokvideo.prototype.searchFeed = function(channel) {
+
+	var query =  this.record.title.main + "+" + this.record.author.lastname;
+
+	$.ajax({
+		type: "GET",
+		url: "https://gdata.youtube.com/feeds/api/videos?v=2&alt=jsonc&author=" + channel + "&max-results=1&q=" + query,
+		dataType: "jsonp",
+		success: this.searchCallback(this)
+	});
+
+};
+
+Bokvideo.prototype.searchCallback = function() {
+	return function(json) {
+			if ( json.data.totalItems > 0 ) {
+				var video = json.data.items[0],
+					test = video.title.indexOf(this.record.title.main) > -1 || video.title.indexOf(this.record.author.lastname) > -1;
+
+		
+			// Barnens bibliotek??	
+				if ( test ) {
+					console.log("video.id = " + video.id);
+
+					// Lägg till en knapp
+				}
+			}
+	};
+};
 
 function CatalogueRecord(e, view) {
 
@@ -142,6 +200,10 @@ CatalogueRecord.prototype.truncateTitle = function() {
 };
 
 // Mervärden
+CatalogueRecord.prototype.bokvideo = function() {
+	new Bokvideo(this);
+};
+
 CatalogueRecord.prototype.dvd = function() {
 	new Dvd(this);
 };
@@ -232,7 +294,6 @@ DetailViewMethods.prototype.addYoutubeMovie = function(id) {
 function Dvd(record) {
 	this.record = record;
 
-	// API-nyckel som första argument till Tmdb
     var tmdb = new Tmdb('de9f79bfc08b502862e4d8bba5723414', this),
 		query;
 
@@ -242,7 +303,9 @@ function Dvd(record) {
 		query += ' ' + record.title.sub;
 	}
 
+	console.log(tmdb);	
 	tmdb.search(query);
+
 }
 
 Dvd.prototype.cover = function(tmdb) {
@@ -326,8 +389,13 @@ SearchResult.prototype.init = function(e, settings) {
 		if ( libraryRecord.isbn && libraryRecord.fieldIsVisible('isbn') ) {
 			libraryRecord.hideField('isbn');
 			libraryRecord.smakprov();
+
+			if ( libraryRecord.publisher ) {
+				libraryRecord.bokvideo();
+			}
+
 		}
-		
+
 		if ( libraryRecord.media === 'DVD' && libraryRecord.fieldIsVisible('media') ) {
 			libraryRecord.dvd();
 		}
