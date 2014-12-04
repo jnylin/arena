@@ -40,12 +40,12 @@ Bokvideo.prototype.search = function(channel) {
 		type: "GET",
 		url: "https://gdata.youtube.com/feeds/api/videos?v=2&alt=jsonc&author=" + channel + "&max-results=1&q=" + query,
 		dataType: "jsonp",
-		success: this.searchCallback(this)
+		success: this.searchCallback(this, this.record.view)
 	});
 
 };
 
-Bokvideo.prototype.searchCallback = function(thisObj) {
+Bokvideo.prototype.searchCallback = function(thisObj, view) {
 	return function(json) {
 			if ( json.data.totalItems > 0 ) {
 				var video = json.data.items[0],
@@ -56,7 +56,16 @@ Bokvideo.prototype.searchCallback = function(thisObj) {
 				if ( test ) {
 					console.log("video.id = " + video.id);
 
-					// Lägg till en knapp
+					switch ( view) {
+						case 'detail':
+							console.log('Add external resource Bokvideo');
+							break;
+						case 'list':
+							thisObj.record.methodsOnThisView.advertise('Bokvideo');
+							break;
+					}
+					
+
 				}
 			}
 	};
