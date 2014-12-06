@@ -1,6 +1,138 @@
-/*! arenajs - v0.1.0 - 2014-12-04
+/*! arenajs - v0.1.0 - 2014-12-06
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
+function Bokpuffen(record) {
+	this.record = record;
+	this.init();
+}
+
+Bokpuffen.prototype.init = function() {
+	$.ajax({
+		type: "GET",
+		url: "http://pipes.yahoo.com/pipes/pipe.run?_id=a69b13c13ba656e4023b3b336c1bb1c3&_render=json&key=getpuff&title="+this.record.title.main.replace('å','a').replace('ä','a').replace('ö','o')+"&_callback=?",
+		dataType: "jsonp",
+		success: this.callback(this)
+	});
+};
+
+Bokpuffen.prototype.callback = function(thisObj) {
+	return function(json) {
+			console.log(json);
+			
+			if ( json.count >= 1 ) {
+				var items = json.value.items,
+					title, author, mediaContent,
+					audioUrl;
+				
+				if ( items.length === 1 ) {
+					// Jämför katalogposten med resultatet
+					title = items[0].title;
+					author = items[0].author;
+					mediaContent = items[0]["media:content"];
+
+					if ( title && author && mediaContent ) {
+						/* replace vill inte fungera
+						 * title = title.replace("&aring;","å").replace("&#228;","ä").replace("&#246;","ö").trim();
+						author = author.replace("&aring;","å").replace("&#228;","ä").replace("&#246;","ö").trim();*/
+
+						console.log(title);
+						console.log(thisObj.record.title.main);
+						console.log(title.indexOf(thisObj.record.title.main));
+
+						switch (thisObj.record.view) {
+							case 'detail':
+								thisObj.record.methodsOnThisView.audioPlayer(mediaContent.url, "Bokpuffen", "Lyssna på bokens inledning");
+								break;
+							case 'list':
+								thisObj.record.methodsOnThisView.advertise('Bokpuffen');
+								break;
+						}
+
+					}
+
+				}
+			}		
+	};
+};
+
+function Boktipset(apiKey, record) {
+	this.apiKey = apiKey;
+	this.record = record;
+}
+
+Boktipset.prototype.init = function() {
+	$.ajax({
+		type: "GET",
+		url: "http://api.boktipset.se/book/book.cgi?accesskey=" + this.apiKey + "&isbn=" + this.record.isbn + "&format=json&jsonwrapper=?",
+		/*broswer finns inte from 1.10 url: $.browser.msie ? "http://opac.vimmerby.se/local/bookit7/add/boktipset.php?isbn=" + isbn : "http://api.boktipset.se/book/book.cgi?accesskey=OHt0dnZGVhTraT0X45VnA&isbn=" + isbn + "&format=json&jsonwrapper=boktipset",*/
+		dataType: "jsonp",
+		scriptCharset: "iso-8859-1",
+		success: this.callback(this)
+	});				
+};
+
+Boktipset.prototype.callback = function(thisObj) {
+	return function(json) {
+		var uList = '<ul></ul>',
+			openListItem = '<li><a href="',
+			listOfPapers,
+			_reviews, _comments,
+			openBlockQuote = '<blockquote><p>',
+			i;
+
+		// Kommentarer
+		if ( json.answer.comments.bookcomments ) {
+			_comments=json.answer.comments.bookcomments.bookcomment;
+		}
+		else {
+			_comments=[];
+		}
+		if ( _comments.length > 0 ) {
+			$("#comments").append('<h3 style="margin-top: 0; text-indent: 2em;">från <a href="' + json.answer.url + '" target="_blank">Boktipset.se</a></h3>');
+			if ( _comments instanceof Array ) {
+				for (i=0;i<=_comments.length-1;i++) {
+					// Skriv inte ut kommentaren om betyget är 1
+					// Vi misstänker att 1 == galning
+					if ( _comments[i].grade > 1 ) {
+						document.getElementById("comments").innerHTML += openBlockQuote + _comments[i].text + '</p></blockquote>';
+					}
+				}
+			}
+			else {
+				// Någon på Boktipset var full när den skrev API:t
+				if ( _comments.grade > 1 ) {
+					document.getElementById("comments").innerHTML += openBlockQuote + _comments.text + '</p></blockquote>';
+				}
+			}
+			// Visa bara kommentarer om det finns några vettiga
+			if ( $("#comments blockquote").length > 0 ) {
+				$("#comments").show();
+			}
+		}
+	
+		// Tidningar och radio
+		_reviews=json.answer.paper_reviews;
+		if ( _reviews ) {
+			$("#papers:hidden").show();
+			$("#papers").append(uList);
+			listOfPapers = document.getElementById("papers").getElementsByTagName("ul")[0];
+			if ( _reviews.item instanceof Array ) {
+				for (i=0;i<=_reviews.item.length-1;i++) {
+					listOfPapers.innerHTML += openListItem + _reviews.item[i].link.substr(24) + '" target="_blank">' + _reviews.item[i].source + '</a></li>';
+				}
+			}
+			else {
+				listOfPapers.innerHTML += openListItem + _reviews.item.link.substr(24) + '" target="_blank">' + _reviews.item.source + '</a></p>';
+			}
+		}
+
+		// Bloggar
+		/* undefined, kolla varför? */
+		//_blogs=json.answer.blogs;
+};
+
+};
+
 
 
 function Bokvideo(record) {
@@ -209,6 +341,10 @@ CatalogueRecord.prototype.truncateTitle = function() {
 };
 
 // Mervärden
+CatalogueRecord.prototype.bokpuffen = function() {
+	new Bokpuffen(this);
+};
+
 CatalogueRecord.prototype.bokvideo = function() {
 	new Bokvideo(this);
 };
@@ -230,36 +366,13 @@ function DetailViewMethods(record) {
 		if ( record.view !== 'detail' ) {
 			throw 'Only possible from the detail-view';
 		}
+		this.record = record;
 	}
 	catch(err) {
 		console.log(err);
 	}
+
 }
-
-DetailViewMethods.prototype.addAudioPlayer = function (audioUrl,linkTxt,linkTitle) {
-		//console.log("audioUrl = " + audioUrl);
-
-		// initiera spelare
-		$("#audioplayer").jPlayer({
-			ready: function () {
-				$(this).jPlayer("setMedia", { 
-					mp3: audioUrl
-				});
-
-			},
-			swfPath: "http://bibliotek.vimmerby.se/documents/58068/137602/Jplayer.swf/82ba0888-e101-438a-a73b-92f31bdc5f74"
-		});
-		
-		// Lägg till länk
-		this.addLnkToExtRes("#jp_container_1",linkTxt,linkTitle,"_self",'btnPlay');		
-
-
-		// OBS!! id
-		$(".btnPlay").click( function() {
-			$("#audioplayer").jPlayer("play");
-			$("#jp_container_1").show("slow");
-		});
-};
 
 DetailViewMethods.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, target, cssClass) {
 	var a = document.createElement('a');
@@ -299,6 +412,35 @@ DetailViewMethods.prototype.addYoutubeMovie = function(id) {
 	$('#youtube').show();
 	
 };
+
+DetailViewMethods.prototype.audioPlayer = function(audioUrl,linkTxt,linkTitle) {
+		//console.log("audioUrl = " + audioUrl);
+
+		// initiera spelare
+		$("#audioplayer").jPlayer({
+			ready: function () {
+				$(this).jPlayer("setMedia", { 
+					mp3: audioUrl
+				});
+
+			},
+			swfPath: "http://bibliotek.vimmerby.se/documents/58068/137602/Jplayer.swf/82ba0888-e101-438a-a73b-92f31bdc5f74"
+		});
+		
+		// Lägg till länk
+		this.addLnkToExtRes("#jp_container_1",linkTxt,linkTitle,"_self",'btnPlay');		
+
+		// Knyt funktionen
+		$(".btnPlay").click( function() {
+			$("#audioplayer").jPlayer("play");
+			$("#jp_container_1").show("slow");
+		});
+};
+
+DetailViewMethods.prototype.boktipset = function() {
+	new Boktipset('OHt0dnZGVhTraT0X45VnA', this.record);
+};
+
 
 function Dvd(record) {
 	this.record = record;
@@ -404,9 +546,18 @@ SearchResult.prototype.init = function(e, settings) {
 			}
 
 		}
-
-		if ( libraryRecord.media === 'DVD' && libraryRecord.fieldIsVisible('media') ) {
-			libraryRecord.dvd();
+		
+		if ( libraryRecord.fieldIsVisible('media') ) {
+			switch ( libraryRecord.media ) {
+				case 'DVD':
+					libraryRecord.dvd();
+					break;
+				case 'Bok':
+					libraryRecord.bokpuffen();
+					break;
+				default:
+					break;
+			}
 		}
 
 		/* För många anrop till Pipes
@@ -433,7 +584,8 @@ function Smakprov(catalogueRecord) {
 	// objektet har isbn och view
 	var that = this;
 	
-	$.getJSON('/smakprov/v1/records?isbn=' + catalogueRecord.isbn, that.callback(this, catalogueRecord.view));	
+	//$.getJSON('/smakprov/v1/records?isbn=' + catalogueRecord.isbn, that.callback(this, catalogueRecord.view));	
+	$.getJSON('http://jnylin.name/bibl/smakprov/provlasSmakprov.php?isbn=' + catalogueRecord.isbn, that.callback(this, catalogueRecord.view));		
 
 	this.getCatalogueRecord = function() {
 		return catalogueRecord;
