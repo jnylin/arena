@@ -1,4 +1,4 @@
-/*! arenajs - v0.1.0 - 2014-12-06
+/*! arenajs - v0.2.0 - 2014-12-06
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
 function Bokpuffen(record) {
@@ -17,12 +17,11 @@ Bokpuffen.prototype.init = function() {
 
 Bokpuffen.prototype.callback = function(thisObj) {
 	return function(json) {
-			console.log(json);
 			
 			if ( json.count >= 1 ) {
 				var items = json.value.items,
 					title, author, mediaContent,
-					audioUrl;
+					methods = thisObj.record.methodsOnThisView;
 				
 				if ( items.length === 1 ) {
 					// Jämför katalogposten med resultatet
@@ -35,16 +34,12 @@ Bokpuffen.prototype.callback = function(thisObj) {
 						 * title = title.replace("&aring;","å").replace("&#228;","ä").replace("&#246;","ö").trim();
 						author = author.replace("&aring;","å").replace("&#228;","ä").replace("&#246;","ö").trim();*/
 
-						console.log(title);
-						console.log(thisObj.record.title.main);
-						console.log(title.indexOf(thisObj.record.title.main));
-
 						switch (thisObj.record.view) {
 							case 'detail':
-								thisObj.record.methodsOnThisView.audioPlayer(mediaContent.url, "Bokpuffen", "Lyssna på bokens inledning");
+								methods.audioPlayer(mediaContent.url, "Bokpuffen", "Lyssna på bokens inledning");
 								break;
 							case 'list':
-								thisObj.record.methodsOnThisView.advertise('Bokpuffen');
+								methods.methodsOnThisView.advertise('Bokpuffen');
 								break;
 						}
 
@@ -58,6 +53,7 @@ Bokpuffen.prototype.callback = function(thisObj) {
 function Boktipset(apiKey, record) {
 	this.apiKey = apiKey;
 	this.record = record;
+	this.init();
 }
 
 Boktipset.prototype.init = function() {
@@ -137,9 +133,7 @@ Boktipset.prototype.callback = function(thisObj) {
 
 function Bokvideo(record) {
 	this.record = record;
-
-	this.search(this.getChannel());
-
+	this.publishers = ["R&S", "BW", "Damm"];
 }
 
 Bokvideo.prototype.getChannel = function() {
@@ -156,15 +150,14 @@ Bokvideo.prototype.getChannel = function() {
 		case "Damm":
 			channel = "FormaBooks";
 			break;
-		default:
-			break;
 	}
+
 
 	return channel;
 
 };
 
-Bokvideo.prototype.search = function(channel) {
+Bokvideo.prototype.init = function(channel) {
 
 	var query =  this.record.title.main + "+" + this.record.author.lastname;
 
@@ -179,27 +172,29 @@ Bokvideo.prototype.search = function(channel) {
 
 Bokvideo.prototype.searchCallback = function(thisObj, view) {
 	return function(json) {
-			if ( json.data.totalItems > 0 ) {
-				var video = json.data.items[0],
-					test = video.title.indexOf(thisObj.record.title.main) > -1 || video.title.indexOf(thisObj.record.author.lastname) > -1;
+		var methods = thisObj.record.methodsOnThisView;
+
+		if ( json.data.totalItems > 0 ) {
+			var video = json.data.items[0],
+				test = video.title.indexOf(thisObj.record.title.main) > -1 || video.title.indexOf(thisObj.record.author.lastname) > -1;
 
 		
 			// Barnens bibliotek??	
-				if ( test ) {
-					console.log("video.id = " + video.id);
+			if ( test ) {
 
-					switch ( view) {
-						case 'detail':
-							console.log('Add external resource Bokvideo');
-							break;
-						case 'list':
-							thisObj.record.methodsOnThisView.advertise('Bokvideo');
-							break;
-					}
+				switch ( view) {
+					case 'detail':
+						methods.addYoutubeMovie(video.id);
+						methods.addLnkToExtRes('#youtube', 'Bokvideo', 'Se en bokvideo', '_self', 'btnPlay');
+						break;
+					case 'list':
+						methods.advertise('Bokvideo');
+						break;
+				}
 					
 
-				}
 			}
+		}
 	};
 };
 
@@ -241,6 +236,7 @@ function CatalogueRecord(e, view) {
 
 	/* Hämta rätt värden från elementen */
 	title = this.subElements.title.text().trim();
+	originalTitle = this.subElements.originalTitle.text().trim();
 	author = this.subElements.author.text();	
 	publisher = this.subElements.publisher.text();
 	year = this.subElements.year.text();
@@ -322,8 +318,10 @@ CatalogueRecord.prototype.hideField = function(field) {
 
 CatalogueRecord.prototype.removeMediumFromTitle = function() {
 	// Tar bort allmän medieterm från titel-elementet
-	var obj = this.subElements.title;
-	obj.text(((obj.text().replace(/\[.*\] ([\/:])/,'$1'))));
+	if ( this.media !== "Bok" ) {
+		var obj = this.subElements.title;
+		obj.text(((obj.text().replace(/\[.*\] ([\/:])/,'$1'))));
+	}
 };
 
 CatalogueRecord.prototype.trimTitle = function() {
@@ -346,7 +344,20 @@ CatalogueRecord.prototype.bokpuffen = function() {
 };
 
 CatalogueRecord.prototype.bokvideo = function() {
-	new Bokvideo(this);
+	var b = new Bokvideo(this);
+
+	try {
+		if ( b.publishers.indexOf(this.publisher) > -1 ) {
+			b.init(b.getChannel());
+		}
+		else {
+			throw "Publisher not on Youtube";
+		}
+	}
+	catch (err) {
+		console.log(err);
+	}
+
 };
 
 CatalogueRecord.prototype.dvd = function() {
@@ -402,7 +413,6 @@ DetailViewMethods.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, tar
 DetailViewMethods.prototype.addYoutubeMovie = function(id) {
 	// id = id hos youtube
 	// url = baseUrl + id + ?rel=0
-	console.log("addYoutubeMovie-id: " + id);
 	var baseUrl = "http://www.youtube-nocookie.com/embed/",
 		width = "560",
 		height = "315";
@@ -438,7 +448,7 @@ DetailViewMethods.prototype.audioPlayer = function(audioUrl,linkTxt,linkTitle) {
 };
 
 DetailViewMethods.prototype.boktipset = function() {
-	new Boktipset('OHt0dnZGVhTraT0X45VnA', this.record);
+	var b = new Boktipset('OHt0dnZGVhTraT0X45VnA', this.record);
 };
 
 
@@ -454,7 +464,6 @@ function Dvd(record) {
 		query += ' ' + record.title.sub;
 	}
 
-	console.log(tmdb);	
 	tmdb.search(query);
 
 }
@@ -498,16 +507,18 @@ function Ljudprov(catalogueRecord) {
 		dataType: "jsonp",
 		cache: true,
 		success: function(json) {
+			var methods = catalogueRecord.methodsOnThisView;
+
 			// obs! röret ger "hit": "1"	
 			if (json.count === 1 && json.value.items[0].hit === "1") {
 				var audioUrl = "http://www.elib.se/sample_new/audio/ISBN" + convert13to10(json.value.items[0].isbn) + ".mp3";
 
 				switch (catalogueRecord.view) {
 					case 'detail':
-						catalogueRecord.methodsOnThisView.addAudioPlayer(audioUrl, 'Provlyssna', 'Lyssna på inledningen av boken');
+						methods.audioPlayer(audioUrl, 'Provlyssna', 'Lyssna på inledningen av boken');
 						break;
 					case 'list':
-						catalogueRecord.methodsOnThisView.advertise('Provlyssna');
+						methods.advertise('Provlyssna');
 						break;
 				}
 
@@ -541,7 +552,8 @@ SearchResult.prototype.init = function(e, settings) {
 			libraryRecord.hideField('isbn');
 			libraryRecord.smakprov();
 
-			if ( libraryRecord.publisher ) {
+			if ( libraryRecord.publisher && libraryRecord.fieldIsVisible('publisher') ) {
+				libraryRecord.hideField('publisher');
 				libraryRecord.bokvideo();
 			}
 
@@ -553,9 +565,7 @@ SearchResult.prototype.init = function(e, settings) {
 					libraryRecord.dvd();
 					break;
 				case 'Bok':
-					libraryRecord.bokpuffen();
-					break;
-				default:
+					//libraryRecord.bokpuffen();
 					break;
 			}
 		}
@@ -580,12 +590,9 @@ SearchResult.prototype.settings = {
 };
 
 function Smakprov(catalogueRecord) {
-	// Använd CatalogueRecord som argument
-	// objektet har isbn och view
-	var that = this;
 	
 	//$.getJSON('/smakprov/v1/records?isbn=' + catalogueRecord.isbn, that.callback(this, catalogueRecord.view));	
-	$.getJSON('http://jnylin.name/bibl/smakprov/provlasSmakprov.php?isbn=' + catalogueRecord.isbn, that.callback(this, catalogueRecord.view));		
+	$.getJSON('http://jnylin.name/bibl/smakprov/provlasSmakprov.php?isbn=' + catalogueRecord.isbn, this.callback(this, catalogueRecord.view));		
 
 	this.getCatalogueRecord = function() {
 		return catalogueRecord;
@@ -614,10 +621,13 @@ Smakprov.prototype.getUrl = function() {
 	return 'http://www.smakprov.se/smakprov.php?isbn=' + this.getCatalogueRecord().isbn + '&l=vimmerby';
 };
 
-function Title(str,origTi) {
-	var h, b, c, n, ti, subTi, part;
-	ti = str;
-	origTi = origTi || ti;
+function Title(ti,origTi) {
+	var h, b, c, n, subTi, part,
+		str;
+
+	if ( typeof origTi === "undefined" ) {
+		origTi = ti;
+	}
 	
 	// "Klipp ut" undertitel, delbeteckning och huvudtitel!!
 	h = ti.search("\\[");    // Medieterm
@@ -658,7 +668,6 @@ function Title(str,origTi) {
 	part = "";
 	if ( n > -1 ) {
 		str = ti.substr(n);
-		console.log(str);
 		part = str.substr(str.search(/[0-9]/));
 		part = part.replace("]","");
 		str = "";
@@ -686,7 +695,7 @@ function Title(str,origTi) {
 
 	
 	// Sätt egenskaper
-	this.main = ti;
+	this.main = ti.replace(":","").trim();
 	if ( subTi !== '' ) {
 		this.sub = subTi;
 	}
@@ -817,6 +826,7 @@ Tmdb.prototype.trailerCallback = function(thisObj, lang) {
 			switch ( thisObj.dvd.record.view ) {
 				case 'detail':
 					thisObj.dvd.record.methodsOnThisView.addYoutubeMovie(id);
+					thisObj.dvd.record.methodsOnThisView.addLnkToExtRes("#youtube", "Trailer", "Se filmens trailer", "_self", "btnPlay");
 					break;
 				case 'list':
 					thisObj.dvd.record.methodsOnThisView.advertise('Trailer');
