@@ -13,5 +13,5 @@
   "node": true,
   "browser": true,
   "jquery": true,
-  "predef": [ "Wicket", "CatalogueRecord", "DetailViewMethods", "ListViewMethods", "SearchResult", "Title", "Dvd", "Tmdb", "truncate", "Smakprov", "Ljudprov", "Bokpuffen", "Bokvideo", "REG_EXP_YEAR", "convert13to10" ]
+  "predef": [ "Wicket", "CatalogueRecord", "DetailViewMethods", "ListViewMethods", "SearchResult", "Title", "Dvd", "Tmdb", "truncate", "Smakprov", "Boktipset", "Ljudprov", "Bokpuffen", "Bokvideo", "REG_EXP_YEAR", "convert13to10" ]
 }
