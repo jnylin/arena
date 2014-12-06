@@ -1,4 +1,5 @@
 node_modules/
 lib/tmdb.old.js
 lib/Dvd.js
+lib/DetailViewMethods.js
 test/
