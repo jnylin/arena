@@ -15,7 +15,7 @@ if ( ! window.console ) {
 		itsam.type = "text/javascript";
 		itsam.src = "http://jnylin.name/bibl/ip/your_ip.php";
 
-		div.innerHTML = '<ul class="feedbackPanel"><li class="feedbackPanelINFO">Du använder en föråldrad version av Internet Explorer.</li><li class="feedbackPanelERROR">Din webbläsare äventyrar säkerheten, är långsam och klarar inte nyare funktioner.</li><li class="feedbackPanelINFO browsehappy">Uppgradera din webbläsare eller installera en annan: <a href="http://www.browserchoice.eu">Information om webbläsare</a></li></ul>';
+		div.innerHTML = '<ul class="feedbackPanel"><li class="feedbackPanelINFO">Du använder en föråldrad version av Internet Explorer.</li><li class="feedbackPanelERROR">Din webbläsare äventyrar säkerheten, är långsam och klarar inte nyare funktioner.</li><li class="feedbackPanelINFO" id="browsehappy">Uppgradera din webbläsare eller installera en annan: <a href="http://www.browserchoice.eu">Information om webbläsare</a></li></ul>';
 
 		body.insertBefore(div, body.childNodes[0]);
 		s.parentNode.insertBefore(itsam, s);
