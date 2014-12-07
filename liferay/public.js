@@ -4,6 +4,19 @@ if ( ! window.console ) {
 	console = { log: function(){} };
 }
 
+// Varna föråldrade webbläsare
+(function() {
+	if ( document.getElementsByTagName('html')[0].getAttribute('class').match(/\b(ie8|ie7|ie6)\b/) ) {
+		var body = document.getElementsByTagName('body')[0],
+			div = document.createElement('div');
+		
+		div.innerHTML = '<ul class="feedbackPanel"><li class="feedbackPanelINFO">Du använder en föråldrad version av Internet Explorer.</li><li class="feedbackPanelERROR">Din webbläsare äventyrar säkerheten, är långsam och klarar inte nyare funktioner.</li><li class="feedbackPanelINFO">Uppgradera din webbläsare eller installera en annan: <a href="http://www.browserchoice.eu">Information om webbläsare</a></li></ul>';
+
+		body.insertBefore(div, body.childNodes[0]);
+		
+	}
+}());
+
 // Utöka jQuery
 (function ($) {
 	$.cachedScript = function( url, options ) {
@@ -36,7 +49,7 @@ if ( ! window.console ) {
 	
 }(jQuery));
 
-// För att undvika timeout
+// Undvik timeout
 (function($) {
 	function omStart() {
 		location.assign('/');
@@ -52,19 +65,6 @@ if ( ! window.console ) {
 	});
 	
 }(jQuery));
-
-// Varna föråldrade webbläsare
-(function() {
-	if ( document.getElementsByTagName('html')[0].getAttribute('class').match(/\b(ie8|ie7|ie6)\b/) ) {
-		var body = document.getElementsByTagName('body')[0],
-			div = document.createElement('div');
-		
-		div.innerHTML = '<ul class="feedbackPanel"><li class="feedbackPanelINFO">Du använder en föråldrad version av Internet Explorer.</li><li class="feedbackPanelERROR">Din webbläsare äventyrar säkerheten, är långsam och klarar inte nyare funktioner.</li><li class="feedbackPanelINFO">Uppgradera din webbläsare eller installera en annan: <a href="http://www.browserchoice.eu">Information om webbläsare</a></li></ul>';
-
-		body.insertBefore(div, body.childNodes[0]);
-		
-	}
-}());
 
 // Putsa DOM-trädet
 (function ($) {
