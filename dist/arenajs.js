@@ -1,4 +1,4 @@
-/*! arenajs - v0.2.0 - 2014-12-06
+/*! arenajs - v0.2.0 - 2014-12-07
 * https://github.com/jnylin/arena
 * Copyright (c) 2014 Jakob Nylin; Licensed GPL */
 function Bokpuffen(record) {
@@ -589,27 +589,24 @@ SearchResult.prototype.settings = {
 	hideFields: []
 };
 
-function Smakprov(catalogueRecord) {
+function Smakprov(record) {
+	this.record = record;
 	
 	//$.getJSON('/smakprov/v1/records?isbn=' + catalogueRecord.isbn, that.callback(this, catalogueRecord.view));	
-	$.getJSON('http://jnylin.name/bibl/smakprov/provlasSmakprov.php?isbn=' + catalogueRecord.isbn, this.callback(this, catalogueRecord.view));		
+	$.getJSON('http://jnylin.name/bibl/smakprov/provlasSmakprov.php?isbn=' + this.record.isbn, this.callback(this, this.record.view));		
 
-	this.getCatalogueRecord = function() {
-		return catalogueRecord;
-	};
-	
 }
 
-Smakprov.prototype.callback = function(thisObj, view) {
+Smakprov.prototype.callback = function(thisObj) {
 	return function(records) {
 		if ( records.length > 0 ) {
-	
-			switch (view) {
+
+			switch (thisObj.record.view) {
 				case 'detail':
-					thisObj.getCatalogueRecord().methodsOnThisView.addLnkToExtRes(thisObj.getUrl(), 'Smakprov', 'Läs ett smakprov av boken', '_blank', 'btnRead');
+					thisObj.record.methodsOnThisView.addLnkToExtRes(thisObj.getUrl(), 'Smakprov', 'Läs ett smakprov av boken', '_blank', 'btnRead');
 					break;
 				case 'list':
-					thisObj.getCatalogueRecord().methodsOnThisView.advertise('Smakprov');
+					thisObj.record.methodsOnThisView.advertise('Smakprov');
 					break;
 			}
 		
@@ -618,7 +615,7 @@ Smakprov.prototype.callback = function(thisObj, view) {
 };
 
 Smakprov.prototype.getUrl = function() {
-	return 'http://www.smakprov.se/smakprov.php?isbn=' + this.getCatalogueRecord().isbn + '&l=vimmerby';
+	return 'http://www.smakprov.se/smakprov.php?isbn=' + this.record.isbn + '&l=vimmerby';
 };
 
 function Title(ti,origTi) {
