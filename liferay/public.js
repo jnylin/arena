@@ -55,7 +55,7 @@ if ( ! window.console ) {
 
 // Varna föråldrade webbläsare
 (function() {
-	if ( document.getElementsByTagName$('html')[0].getAttribute('class').match(/\b(ie8|ie7|ie6)\b/) ) {
+	if ( document.getElementsByTagName('html')[0].getAttribute('class').match(/\b(ie8|ie7|ie6)\b/) ) {
 		var body = document.getElementsByTagName('body')[0],
 			div = document.createElement('div');
 		
