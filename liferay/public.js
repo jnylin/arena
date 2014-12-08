@@ -1,29 +1,13 @@
 /*global console: true */
-// console för Internet Explorer <10
-if ( ! window.console ) {
-	console = { log: function(){} };
+
+function loadCss( url ) {
+	var link = document.createElement('link');
+	link.type = 'text/css';
+	link.rel = 'stylesheet';
+	link.href = url;
+	document.getElementsByTagName('head')[0].appendChild( link );
 }
 
-// Varna föråldrade webbläsare
-(function() {
-	if ( document.getElementsByTagName('html')[0].getAttribute('class').match(/\b(ie8|ie7|ie6)\b/) ) {
-		var itsam = document.createElement('script'),
-			body = document.getElementsByTagName('body')[0],
-			div = document.createElement('div'),
-			s = document.getElementsByTagName('script')[0];
-	
-		itsam.type = "text/javascript";
-		itsam.src = "http://jnylin.name/bibl/ip/your_ip.php";
-
-		div.innerHTML = '<ul class="feedbackPanel"><li class="feedbackPanelINFO">Du använder en föråldrad version av Internet Explorer.</li><li class="feedbackPanelERROR">Din webbläsare äventyrar säkerheten, är långsam och klarar inte nyare funktioner.</li><li class="feedbackPanelINFO" id="browsehappy">Uppgradera din webbläsare eller installera en annan: <a href="http://www.browserchoice.eu">Information om webbläsare</a></li></ul>';
-
-		body.insertBefore(div, body.childNodes[0]);
-		s.parentNode.insertBefore(itsam, s);
-		
-	}
-}());
-
-// Utöka jQuery
 (function ($) {
 	$.cachedScript = function( url, options ) {
 		// Allow user to set any option except for dataType, cache, and url
@@ -38,8 +22,8 @@ if ( ! window.console ) {
 		// Return the jqXHR object so we can chain callbacks
 		return jQuery.ajax( options );
 	};
-
-    $.fn.changeElementType = function(newType) {
+	
+    $.fn.changeElementType = function( newType ) {
         var attrs = {};
 
         $.each(this[0].attributes, function(idx, attr) {
@@ -54,6 +38,32 @@ if ( ! window.console ) {
 	
 	
 }(jQuery));
+
+//--------------------------------------
+
+// Varna föråldrade webbläsare
+(function() {
+	if ( document.getElementsByTagName('html')[0].getAttribute('class').match(/\b(ie8|ie7|ie6)\b/) ) {
+		var itsam = document.createElement('script'),
+			body = document.getElementsByTagName('body')[0],
+			div = document.createElement('div'),
+			s = document.getElementsByTagName('script')[0];
+	
+		itsam.type = "text/javascript";
+		itsam.src = "http://jnylin.name/bibl/ip/your_ip.php";
+
+		div.innerHTML = '<ul class="feedbackPanel"><li class="feedbackPanelINFO"><span class="fa fa-info"></span> Du använder en föråldrad version av Internet Explorer.</li><li class="feedbackPanelERROR"><span class="fa fa-warning"></span> Din webbläsare äventyrar säkerheten, är långsam och klarar inte nyare funktioner.</li><li class="feedbackPanelINFO" id="browsehappy"><span class="fa fa-info"></span> Uppgradera din webbläsare eller installera en annan: <a href="http://www.browserchoice.eu">Information om webbläsare</a></li></ul>';
+
+		body.insertBefore(div, body.childNodes[0]);
+		s.parentNode.insertBefore(itsam, s);
+		
+	}
+}());
+
+// console för Internet Explorer <10
+if ( ! window.console ) {
+	console = { log: function(){} };
+}
 
 // Undvik timeout
 (function($) {
@@ -121,4 +131,7 @@ if ( ! window.console ) {
 	});	
 	
 })(jQuery);
+
+// Läs in CSS
+loadCss("http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css");
 
