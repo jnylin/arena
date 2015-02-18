@@ -39,6 +39,17 @@ function loadCss( url ) {
 	
 }(jQuery));
 
+// Automatisk mediaClass
+(function ($) {
+	$('.portlet-simpleSearch form').submit(function() {
+		var q = $('input[name="textSearchQuery"]').val();
+		q = q.replace(/e-?b(ok|öcker)/,"mediaClass:ebook")
+		.replace(/e-?ljudb(ok|öcker)/,"mediaClass:eAudio")
+		.replace(/(^|\s)dvd/," mediaClass:dvd");
+		$('input[name="textSearchQuery"]').val(q);
+	});
+}(jQuery));
+
 //--------------------------------------
 
 // Varna föråldrade webbläsare
@@ -89,7 +100,7 @@ if ( ! window.console ) {
 	$(function() {
 
 		/* Sökrutan */
-		$('.arena-search-text .arena-input-text').attr('placeholder', 'Sök böcker, filmer, tidskrifter …');	
+		$('.arena-search-text .arena-input-text').attr('placeholder', 'Sök böcker, e-böcker, filmer, tidskrifter …');	
 	
 		/* Inloggning */
 		$('.arena-login-username').attr('placeholder', 'Lånekort, personnr eller användarnamn').attr('title', 'Lånekortsnumret (11 siffror), ditt personnummer (10 siffror utan streck) eller användarnamn');
