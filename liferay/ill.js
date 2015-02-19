@@ -9,7 +9,7 @@
  
 			validation =	{
 				setupFormValidation: function() {
-					$("#ill").validate({
+					$(".illAcq form").validate({
 						rules: {
 							name: "required",
 							email: {
@@ -31,19 +31,18 @@
 								var options = { 
 									success:       showResponse,  // post-submit callback 
 									url:       'http://jnylin.name/bibl/arena/send_wish.php'         // override for form's 'action' attribute 
-	
-								}; 						
+								};			
 
 								// Skicka det
 								$(form).ajaxSubmit(options);
-								$('#ill').slideUp();								
+								$('.illAcq form').slideUp();								
 							}						
 							else {
 								// IE och CORS är ingen rolig kombination, skicka på vanligt sätt
 								// och lägg resultatet i en iframe
 								$('iframe[name="outputForIE"]').slideDown();
 								form.submit();
-								$('#ill').slideUp();								
+								$('.illAcq form').slideUp();								
 							}
 						}
 					});
@@ -57,8 +56,8 @@
 				
 				console.log("card = " + card);
 				if ( card && card !== "1234" ) {
-					$("#ill").show();
-					$(".acqSuggestion .feedbackPanelERROR").hide();
+					$(".illAcq form").show();
+					$(".illAcq .feedbackPanelERROR").hide();
 				}
 			
 				// Sätt valideringsregler
@@ -76,11 +75,11 @@
 	// Hantera svaret från servern
 	function showResponse(data, statusText, xhr, $form)  { 
 		if ( data.success === true ) {
-			$('#illOutput').html('<li class="feedbackPanelINFO"><span class="fa fa-info"></span> <span class="feedbackPanelINFO">'+data.message+'</span></li>');
-			$('#ill').hide();
+			$('.illAcq ul.feedbackPanel').html('<li class="feedbackPanelINFO"><span class="fa fa-info"></span> <span class="feedbackPanelINFO">'+data.message+'</span></li>');
+			$('.illAcq form').hide();
 		}
 		else {
-			$('#illOutput').html('<li class="feedbackPanelERROR"><span class="fa fa-warning"></span> <span class="feedbackPanelERROR">'+data.message+'</span></li>');
+			$('.illAcq ul.feedbackPanel').html('<li class="feedbackPanelERROR"><span class="fa fa-warning"></span> <span class="feedbackPanelERROR">'+data.message+'</span></li>');
 		}
 	} 
 		
