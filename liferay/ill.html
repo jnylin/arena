@@ -1,0 +1,26 @@
+<ul class="feedbackPanel">
+  <li class="feedbackPanelERROR">
+    <span class="fa fa-warning">&nbsp;</span> <span class="feedbackPanelERROR">Logga in för att skicka meddelande till biblioteket</span>
+  </li>
+</ul>
+<form action="http://jnylin.name/bibl/arena/send_wish_ie.php" method="POST" target="outputForIE">
+  <input name="type" type="hidden" value="Fjärrlåneansökan" /> <input name="card" type="hidden" value="1234" />
+  <fieldset>
+    <legend>Kontaktuppgifter</legend>
+    <label class="arena-field" for="name">Namn: </label><input class="arena-input-text" id="name" name="name" type="text" /><br />
+    <label class="arena-field" for="email">E-post: </label><input class="arena-input-text" id="email" name="email" type="text" />
+  </fieldset>
+  <fieldset>
+    <legend>Fjärrlåneansökan</legend> <label class="arena-field" for="author">Författare: </label><input class="arena-input-text" id="author" name="author" type="text" /><br />
+    <label class="arena-field" for="title">Titel: </label><input class="arena-input-text" id="title" name="title" type="text" /><br />
+    <label class="arena-field" for="publisher">Förlag: </label><input class="arena-input-text" id="publisher" name="publisher" type="text" /><br />
+    <label class="arena-field" for="year">År: </label><input class="arena-input-text" id="year" name="year" type="text" /><br />
+    <label class="arena-field" for="language">Språk: </label><input class="arena-input-text" id="language" name="language" type="text" /><br />
+    <label class="arena-field" for="identifier">ISBN/ISSN: </label><input class="arena-input-text" id="identifier" name="identifier" type="text" />
+  </fieldset>
+  <fieldset>
+    <label class="arena-field" for="free">Fritext: </label><textarea id="free" name="free"></textarea>
+  </fieldset>
+  <button class="arena-input-submit" type="submit">Skicka</button>
+</form>
+<p><iframe name="outputForIE" seamless="seamless"></iframe></p>
