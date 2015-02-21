@@ -1,4 +1,4 @@
-/*! arenajs - v0.2.0 - 2015-02-18
+/*! arenajs - v0.8.0 - 2015-02-21
 * https://github.com/jnylin/arena
 * Copyright (c) 2015 Jakob Nylin; Licensed GPL */
 function Bokpuffen(record) {
