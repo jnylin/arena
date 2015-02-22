@@ -16,16 +16,17 @@
 								required: true,
 								email: true
 							},
-							title: "required"
+							title: "required",
+							fee: "required"
 						},
 						messages: {
 							name: "Du glömde skriva in ditt namn",
 							email: "Du måste ange en e-postadress vi kan nå dig på",
-							title: "Titel måste anges"
+							title: "Titel måste anges",
+							fee: "Du måste acceptera avgiften"
 						},
 						submitHandler: function(form) {
-							console.log( $('html.ie').length );
-							if ( $('html.ie').length === 0 ) {
+							if ( $('html.ie8, html.ie9').length === 0 ) {
 						
 								// Förbered formuläret
 								var options = { 
