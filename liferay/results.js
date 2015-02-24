@@ -39,11 +39,15 @@ $(function() {
 				record.dvd();
 			}
 			else if ( record.media === "Bok" || record.media === "E-bok" ) {
+
 				// Bokvideor
 				record.bokvideo();
 
-				// Bokpuffen
-				record.bokpuffen();
+				// Bara om inte Smakprov
+				if ( record.decorations.indexOf("Smakprov") === -1 ) {
+					// Bokpuffen
+					record.bokpuffen();
+				}
 			}
 			else if ( record.media.toLowerCase().indexOf("ljudbok") > -1 ) {
 				// Ljudbok, MP3; Ljudbok, CD; E-ljudbok

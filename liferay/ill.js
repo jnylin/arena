@@ -9,41 +9,41 @@
  
 			validation =	{
 				setupFormValidation: function() {
-					$("#ill").validate({
+					$(".illAcq form").validate({
 						rules: {
 							name: "required",
 							email: {
 								required: true,
 								email: true
 							},
-							title: "required"
+							title: "required",
+							fee: "required"
 						},
 						messages: {
 							name: "Du glömde skriva in ditt namn",
 							email: "Du måste ange en e-postadress vi kan nå dig på",
-							title: "Titel måste anges"
+							title: "Titel måste anges",
+							fee: "Du måste acceptera avgiften"
 						},
 						submitHandler: function(form) {
-							console.log( $('html.ie').length );
-							if ( $('html.ie').length === 0 ) {
+							if ( $('html.ie8, html.ie9').length === 0 ) {
 						
 								// Förbered formuläret
 								var options = { 
 									success:       showResponse,  // post-submit callback 
 									url:       'http://jnylin.name/bibl/arena/send_wish.php'         // override for form's 'action' attribute 
-	
-								}; 						
+								};			
 
 								// Skicka det
 								$(form).ajaxSubmit(options);
-								$('#ill').slideUp();								
+								$('.illAcq form').slideUp();								
 							}						
 							else {
 								// IE och CORS är ingen rolig kombination, skicka på vanligt sätt
 								// och lägg resultatet i en iframe
 								$('iframe[name="outputForIE"]').slideDown();
 								form.submit();
-								$('#ill').slideUp();								
+								$('.illAcq form').slideUp();								
 							}
 						}
 					});
@@ -57,8 +57,8 @@
 				
 				console.log("card = " + card);
 				if ( card && card !== "1234" ) {
-					$("#ill").show();
-					$(".acqSuggestion .feedbackPanelERROR").hide();
+					$(".illAcq form").show();
+					$(".illAcq .feedbackPanelERROR").hide();
 				}
 			
 				// Sätt valideringsregler
@@ -76,11 +76,11 @@
 	// Hantera svaret från servern
 	function showResponse(data, statusText, xhr, $form)  { 
 		if ( data.success === true ) {
-			$('#illOutput').html('<li class="feedbackPanelINFO"><span class="fa fa-info"></span> <span class="feedbackPanelINFO">'+data.message+'</span></li>');
-			$('#ill').hide();
+			$('.illAcq ul.feedbackPanel').html('<li class="feedbackPanelINFO"><span class="fa fa-info"></span> <span class="feedbackPanelINFO">'+data.message+'</span></li>');
+			$('.illAcq form').hide();
 		}
 		else {
-			$('#illOutput').html('<li class="feedbackPanelERROR"><span class="fa fa-warning"></span> <span class="feedbackPanelERROR">'+data.message+'</span></li>');
+			$('.illAcq ul.feedbackPanel').html('<li class="feedbackPanelERROR"><span class="fa fa-warning"></span> <span class="feedbackPanelERROR">'+data.message+'</span></li>');
 		}
 	} 
 		

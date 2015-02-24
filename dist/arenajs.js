@@ -1,6 +1,6 @@
-/*! arenajs - v0.2.0 - 2014-12-09
+/*! arenajs - v0.8.0 - 2015-02-21
 * https://github.com/jnylin/arena
-* Copyright (c) 2014 Jakob Nylin; Licensed GPL */
+* Copyright (c) 2015 Jakob Nylin; Licensed GPL */
 function Bokpuffen(record) {
 	this.record = record;
 	this.init();
@@ -278,7 +278,7 @@ function CatalogueRecord(e, view) {
 			this.author.firstname = this.subElements.author.text().split(',')[1].substring(1).trim();
 		}
 		else {
-			// Snorre Sturlason, Heliga Birgitta etc.
+			// Snorre Sturlasson, Heliga Birgitta, Leonardo da Vinci etc.
 			this.author.name = this.subElements.author.text();
 		}
 	}
@@ -300,6 +300,7 @@ function CatalogueRecord(e, view) {
 	
 	/* Egenskaper för mervärden */
 	this.methodsOnThisView = methodsOnThisView;
+	this.decorations = [];
 	
 	/* Priviligerade funktioner */
 	this.getSelector = function() {
@@ -378,10 +379,89 @@ CatalogueRecord.prototype.smakprov = function() {
 	new Smakprov(this);
 };
 
+function DetailViewMethods(record) {
+	try {
+		if ( record.view !== 'detail' ) {
+			throw 'Only possible from the detail-view';
+		}
+		this.record = record;
+	}
+	catch(err) {
+		console.log(err);
+	}
+
+}
+
+DetailViewMethods.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, target, cssClass) {
+	var a = document.createElement('a');
+
+	a.setAttribute('href', url);
+	if ( lnkTitle ) {
+		a.setAttribute('title', lnkTitle);
+	}
+	else {
+		lnkTitle = '';
+	}
+	if ( target ) {
+		a.setAttribute('target', target);
+	} 
+	else {
+		a.setAttribute('target', '_blank');
+		a.setAttribute('title', lnkTitle + ' (Öppnas i nytt fönster)');
+	}
+	if ( cssClass ) {
+		a.setAttribute('class', cssClass);
+	}
+	a.innerHTML = lnkTxt;
+
+	$('#extRes').append(a);
+};
+
+DetailViewMethods.prototype.addYoutubeMovie = function(id) {
+	// id = id hos youtube
+	// url = baseUrl + id + ?rel=0
+	var baseUrl = "http://www.youtube-nocookie.com/embed/",
+		width = "560",
+		height = "315";
+
+	// Lägg till youtube-filmen till sidan
+	$('#youtube').prepend('<iframe width="' + width + '" height="' + height + '" src="' + baseUrl + id + '?rel=0" frameborder="0" allowfullscreen></iframe>');
+	$('#youtube').show();
+	
+};
+
+DetailViewMethods.prototype.audioPlayer = function(audioUrl,linkTxt,linkTitle) {
+		//console.log("audioUrl = " + audioUrl);
+
+		// initiera spelare
+		$("#audioplayer").jPlayer({
+			ready: function () {
+				$(this).jPlayer("setMedia", { 
+					mp3: audioUrl
+				});
+
+			},
+			swfPath: "http://bibliotek.vimmerby.se/documents/58068/137602/Jplayer.swf/82ba0888-e101-438a-a73b-92f31bdc5f74"
+		});
+		
+		// Lägg till länk
+		this.addLnkToExtRes("#jp_container_1",linkTxt,linkTitle,"_self",'btnPlay');		
+
+		// Knyt funktionen
+		$(".btnPlay").click( function() {
+			$("#audioplayer").jPlayer("play");
+			$("#jp_container_1").show("slow");
+		});
+};
+
+DetailViewMethods.prototype.boktipset = function() {
+	var b = new Boktipset('OHt0dnZGVhTraT0X45VnA', this.record);
+};
+
+
 function Dvd(record) {
 	this.record = record;
 
-	// API-nyckel som första argument till Tmdb
     var tmdb = new Tmdb('de9f79bfc08b502862e4d8bba5723414', this),
 		query;
 
@@ -391,7 +471,6 @@ function Dvd(record) {
 		query += ' ' + record.title.sub;
 	}
 
-	console.log(tmdb);	
 	tmdb.search(query);
 
 }
@@ -529,6 +608,9 @@ Smakprov.prototype.callback = function(thisObj) {
 	return function(records) {
 		if ( records.length > 0 ) {
 
+			thisObj.record.decorations.push("Smakprov");
+			console.log(thisObj.record.decorations);
+
 			switch (thisObj.record.view) {
 				case 'detail':
 					thisObj.record.methodsOnThisView.addLnkToExtRes(thisObj.getUrl(), 'Smakprov', 'Läs ett smakprov av boken', '_blank', 'btnRead');
@@ -647,7 +729,7 @@ Tmdb.prototype.search = function(query) {
 
 	$.ajax({
 		type: 'GET',
-		url: this.api + 'search/multi?api_key=' + this.apiKey + '&query=' + encodeURIComponent(query) + '&language=sv&page=1&include_adult=false',
+		url: this.api + 'search/multi?api_key=' + this.apiKey + '&query=' + encodeURIComponent(query) + '&language=sv&include_adult=false',
 		datatype: 'jsonp',
 		success: this.searchCallback(this),
 		complete: function(jqXHR, textStatus) {
@@ -668,6 +750,8 @@ Tmdb.prototype.searchCallback = function(thisObj) {
 		for (var i=0;i<arrResults.length;i++) {
 			if ( arrResults[i].media_type === "movie" && thisObj.movieIsInListOfHits(arrResults[i], "ti") === true ) {
 				movie = arrResults[i];
+				console.log("Jämför svensk titel");
+				console.log(movie);
 				diffYear = thisObj.dvd.record.year - REG_EXP_YEAR.exec(movie.release_date);	
 				arrCandidates.push([diffYear,i]);					
 			}
