@@ -1,5 +1,5 @@
-/*! arenajs - v0.8.0 - 2015-02-21
-* https://github.com/jnylin/arena
+/*! arenajs - v1.0.0 - 2015-02-25
+* https://github.com/jnylin/vimmarena
 * Copyright (c) 2015 Jakob Nylin; Licensed GPL */
 function Bokpuffen(record) {
 	this.record = record;
@@ -331,6 +331,15 @@ CatalogueRecord.prototype.removeMediumFromTitle = function() {
 	}
 };
 
+CatalogueRecord.prototype.removeParentheses = function() {
+	// Tar bort paranteser och dess innehåll från titel-elementet
+	// Kan det förekomma titlar med paranteser?
+	// OBS! Ändra till paranteser
+	var obj = this.subElements.title;
+	obj.text( obj.text().replace(/(.*) \[.*\]/,'$1') );
+	console.log( obj.text() );
+};
+
 CatalogueRecord.prototype.trimTitle = function() {
 	this.subElements.title.html( this.title.main );
 };
@@ -547,6 +556,12 @@ SearchResult.prototype.init = function(e, settings) {
 	e.find('.arena-library-record').each(function() {
 		var libraryRecord = new CatalogueRecord(this, 'list');
 
+		if ( settings.removeParentheses ) {
+			console.log(libraryRecord);
+			libraryRecord.removeParentheses();
+			console.log(libraryRecord);
+		}
+		
 		if ( settings.trimTitle ) {
 			libraryRecord.trimTitle();
 		}
@@ -591,6 +606,7 @@ SearchResult.prototype.init = function(e, settings) {
 };
 
 SearchResult.prototype.settings = {
+	removeParentheses: false,
 	trimTitle: true,
 	truncate: false,
 	hideFields: []
@@ -609,7 +625,6 @@ Smakprov.prototype.callback = function(thisObj) {
 		if ( records.length > 0 ) {
 
 			thisObj.record.decorations.push("Smakprov");
-			console.log(thisObj.record.decorations);
 
 			switch (thisObj.record.view) {
 				case 'detail':
@@ -729,7 +744,7 @@ Tmdb.prototype.search = function(query) {
 
 	$.ajax({
 		type: 'GET',
-		url: this.api + 'search/multi?api_key=' + this.apiKey + '&query=' + encodeURIComponent(query) + '&language=sv&include_adult=false',
+		url: this.api + 'search/multi?api_key=' + this.apiKey + '&query=' + encodeURIComponent(query) + '&language=sv&page=1&include_adult=false',
 		datatype: 'jsonp',
 		success: this.searchCallback(this),
 		complete: function(jqXHR, textStatus) {
@@ -747,11 +762,10 @@ Tmdb.prototype.searchCallback = function(thisObj) {
 
 		/* HANTERA TRÄFFLISTAN */
 		// Jämför svensk/tillgänglig titel
+		// Problem med fält 945, t.ex. Frozen/Frost
 		for (var i=0;i<arrResults.length;i++) {
 			if ( arrResults[i].media_type === "movie" && thisObj.movieIsInListOfHits(arrResults[i], "ti") === true ) {
 				movie = arrResults[i];
-				console.log("Jämför svensk titel");
-				console.log(movie);
 				diffYear = thisObj.dvd.record.year - REG_EXP_YEAR.exec(movie.release_date);	
 				arrCandidates.push([diffYear,i]);					
 			}

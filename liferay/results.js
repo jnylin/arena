@@ -12,9 +12,6 @@ $(function() {
 			// Göm/snygga till en del fält
 						
 			// Dölj originaltiteln på filmer
-			console.log(record.title.original);
-			console.log(record.title);
-			console.log(record.title.main);
 			if ( record.title.original === record.title.main || record.media === "DVD" ) {
 				$(".arena-detail-original").hide(); 
 				// Originaltitel kan väl vara bra att visa när den skiljer sig från svensk titel?
