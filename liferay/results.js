@@ -19,6 +19,7 @@ $(function() {
 	
 			// Ta bort allmän medieterm, men INTE undertitel inom klammer!	
 			record.removeMediumFromTitle();
+			record.removeParenthesesFromTitle();
 						
 			if ( record.isbn ) {
 				record.methodsOnThisView.boktipset();
