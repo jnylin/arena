@@ -2,22 +2,22 @@
   "name": "arenajs",
   "description": "Common js for Axiell Arena",
   "version": "1.0.0",
-  "homepage": "https://github.com/jnylin/vimmarena",
+  "homepage": "https://github.com/jnylin/vimmarena-js",
   "author": {
     "name": "Jakob Nylin",
     "email": "jakob.nylin@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/jnylin/arena.git"
+    "url": "git://github.com/jnylin/vimmarena-js.git"
   },
   "bugs": {
-    "url": "https://github.com/jnylin/arena/issues"
+    "url": "https://github.com/jnylin/vimmarena-js/issues"
   },
   "licenses": [
     {
       "type": "GPL",
-      "url": "https://github.com/jnylin/arena/gpl-3.0.txt"
+      "url": "https://github.com/jnylin/vimmarena-js/gpl-3.0.txt"
     }
   ],
   "scripts": {
