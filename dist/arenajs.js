@@ -1,4 +1,4 @@
-/*! arenajs - v1.0.0 - 2015-02-25
+/*! arenajs - v1.0.0 - 2015-02-28
 * https://github.com/jnylin/vimmarena
 * Copyright (c) 2015 Jakob Nylin; Licensed GPL */
 function Bokpuffen(record) {
@@ -331,13 +331,14 @@ CatalogueRecord.prototype.removeMediumFromTitle = function() {
 	}
 };
 
-CatalogueRecord.prototype.removeParentheses = function() {
+CatalogueRecord.prototype.removeParenthesesFromTitle = function() {
 	// Tar bort paranteser och dess innehåll från titel-elementet
 	// Kan det förekomma titlar med paranteser?
 	// OBS! Ändra till paranteser
-	var obj = this.subElements.title;
-	obj.text( obj.text().replace(/(.*) \[.*\]/,'$1') );
-	console.log( obj.text() );
+	// OBS! Funkar inte från SearchResult av okänd anledning
+	var title = this.title.main.replace(/(.*) \(.*\)/,'$1'); 
+	console.log(title);
+	this.subElements.title.text( title );
 };
 
 CatalogueRecord.prototype.trimTitle = function() {
@@ -350,7 +351,7 @@ CatalogueRecord.prototype.truncateTitle = function() {
 	if ( this.title.part ) {
 		title += ' ' + this.title.part;
 	}
-
+	
 	this.subElements.title.html( truncate(title, 30) );
 };
 
@@ -556,14 +557,12 @@ SearchResult.prototype.init = function(e, settings) {
 	e.find('.arena-library-record').each(function() {
 		var libraryRecord = new CatalogueRecord(this, 'list');
 
-		if ( settings.removeParentheses ) {
-			console.log(libraryRecord);
-			libraryRecord.removeParentheses();
-			console.log(libraryRecord);
-		}
-		
 		if ( settings.trimTitle ) {
 			libraryRecord.trimTitle();
+		}
+
+		if ( settings.removeParentheses ) {
+			libraryRecord.removeParenthesesFromTitle();
 		}
 
 		if ( settings.truncate ) {
@@ -606,8 +605,8 @@ SearchResult.prototype.init = function(e, settings) {
 };
 
 SearchResult.prototype.settings = {
-	removeParentheses: false,
 	trimTitle: true,
+	removeParentheses: false,
 	truncate: false,
 	hideFields: []
 };
