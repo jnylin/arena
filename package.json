@@ -1,8 +1,8 @@
 {
   "name": "arenajs",
   "description": "Common js for Axiell Arena",
-  "version": "0.8.0",
-  "homepage": "https://github.com/jnylin/arena",
+  "version": "1.0.0",
+  "homepage": "https://github.com/jnylin/vimmarena",
   "author": {
     "name": "Jakob Nylin",
     "email": "jakob.nylin@gmail.com"

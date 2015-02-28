@@ -39,13 +39,14 @@ function loadCss( url ) {
 	
 }(jQuery));
 
-// Automatisk mediaClass
 (function ($) {
 	$('.portlet-simpleSearch form').submit(function() {
 		var q = $('input[name="textSearchQuery"]').val();
 		q = q.replace(/e-?b(ok|öcker)/,"mediaClass:ebook")
 		.replace(/e-?ljudb(ok|öcker)/,"mediaClass:eAudio")
-		.replace(/(^|\s)dvd/," mediaClass:dvd");
+		.replace(/(^|\s)dvd/," mediaClass:dvd")
+		.replace(/(^|\s)mp3/," mediaClass:digitalAudioFile")
+		.replace(/(^|\s)ljudb(ok|öcker)/," (mediaClass:digitalAudioFile OR mediaClass:cdBook OR mediaClass:eaudio OR mediaClass:cd)");
 		$('input[name="textSearchQuery"]').val(q);
 	});
 }(jQuery));
