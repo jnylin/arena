@@ -21,4 +21,4 @@ _Also, please don't edit files in the "dist" subdirectory as they are generated 
 
 ## License
 Copyright (c) 2014 Jakob Nylin  
-Licensed under [the GPL license](gpl-3.0.txt)
+Licensed under [the GPL license](LICENSE)
