@@ -11,6 +11,10 @@ module.exports = function(grunt) {
       '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
       '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
       ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
+    shortBanner: '/*! <%= grunt.template.today("yyyy-mm-dd") %>\n' +
+      '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
+      '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
+      ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
     // Task configuration.
     concat: {
       options: {
@@ -23,14 +27,17 @@ module.exports = function(grunt) {
       },
     },
     uglify: {
-      options: {
-        banner: '<%= banner %>'
-      },
       dist: {
+        options: {
+          banner: '<%= banner %>'
+		},
         src: '<%= concat.dist.dest %>',
         dest: 'dist/<%= pkg.name %>.min.js'
       },
       liferay: {
+        options: {
+          banner: '<%= shortBanner %>'
+		},
         expand: true,
         src: ['liferay/*.js', '!liferay/*_dynamicTitle.js', '!liferay/*.old.js', '!liferay/old/*'],
 		dest: 'dist/',
