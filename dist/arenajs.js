@@ -550,10 +550,17 @@ function SearchResult(e, options) {
 	var settings = $.extend(this.settings, options);
 	
 	this.init(e, settings);
+	
+	// Håll ordning på vilken sida vi är på
+	// för att kunna numrera korrekt med CSS
+	var pageNr = $('.arena-page-number > span > em > span').text().substring(1);
+	this.pageNr = pageNr;
 
 }
 
 SearchResult.prototype.init = function(e, settings) {
+	
+	// En lista består av katalogposter
 	e.find('.arena-library-record').each(function() {
 		var libraryRecord = new CatalogueRecord(this, 'list');
 

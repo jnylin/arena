@@ -3,13 +3,13 @@
 		$.cachedScript("http://bibliotek.vimmerby.se/documents/58068/138011/arenajs.min.js/ce0740d4-a718-4217-aa67-55035d95f6eb").done(function() {
 			var cssClass = 'portlet-listRecordSearchResult',
 				settings = {
-					showPublisherAndYear: true,
 					hideFields: ['media']
 				};
 
-			new SearchResult($('.'+cssClass), settings);
+			var list = new SearchResult($('.'+cssClass), settings);
 			Wicket.Ajax.registerPostCallHandler(function() {
-				new SearchResult($('.'+cssClass), settings);
+				list = new SearchResult($('.'+cssClass), settings);
+				$('.charts').css('counter-reset', 'record ' + ( (list.pageNr-1)*10 ));
 			});
 		});
 	}
