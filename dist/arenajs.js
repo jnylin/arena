@@ -1,5 +1,5 @@
-/*! arenajs - v1.0.0 - 2015-02-28
-* https://github.com/jnylin/vimmarena
+/*! arenajs - v1.0.0 - 2015-03-01
+* https://github.com/jnylin/vimmarena-js
 * Copyright (c) 2015 Jakob Nylin; Licensed GPL */
 function Bokpuffen(record) {
 	this.record = record;
@@ -579,6 +579,11 @@ SearchResult.prototype.init = function(e, settings) {
 			}
 
 		}
+
+		if ( settings.showPublisherAndYear && libraryRecord.publisher && libraryRecord.fieldIsVisible('year') ) {
+			libraryRecord.hideField('publisher'); // Om ISBN saknas måste det göras här
+			libraryRecord.subElements.year.prepend(libraryRecord.publisher + ", ");
+		}
 		
 		if ( libraryRecord.fieldIsVisible('media') ) {
 			switch ( libraryRecord.media ) {
@@ -608,6 +613,7 @@ SearchResult.prototype.settings = {
 	trimTitle: true,
 	removeParentheses: false,
 	truncate: false,
+	showPublisherAndYear: false,
 	hideFields: []
 };
 
