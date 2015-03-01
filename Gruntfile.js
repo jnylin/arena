@@ -61,6 +61,13 @@ module.exports = function(grunt) {
       gruntfile: {
         files: '<%= jshint.gruntfile.src %>',
         tasks: ['jshint:gruntfile']
+      },
+	  liferay: {
+        files: ['liferay/*.js', '!liferay/*_dynamicTitle.js', '!liferay/*.old.js', '!liferay/old/*'],
+		tasks: ['jshint:liferay', 'uglify:liferay'],
+		options: {
+		  spawn: false
+		}
       }
     }
   });
