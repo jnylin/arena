@@ -579,6 +579,11 @@ SearchResult.prototype.init = function(e, settings) {
 			}
 
 		}
+
+		if ( settings.showPublisherAndYear && libraryRecord.publisher && libraryRecord.fieldIsVisible('year') ) {
+			libraryRecord.hideField('publisher'); // Om ISBN saknas måste det göras här
+			libraryRecord.subElements.year.prepend(libraryRecord.publisher + ", ");
+		}
 		
 		if ( libraryRecord.fieldIsVisible('media') ) {
 			switch ( libraryRecord.media ) {
@@ -608,6 +613,7 @@ SearchResult.prototype.settings = {
 	trimTitle: true,
 	removeParentheses: false,
 	truncate: false,
+	showPublisherAndYear: false,
 	hideFields: []
 };
 
