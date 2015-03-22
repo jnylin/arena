@@ -7,8 +7,12 @@ $(function() {
 		
 			var record = new CatalogueRecord($('.portlet-catalogueDetail'), 'detail'),
 				publisherssWithVideo;
-								
+
+			// Sätt mediaClass som CSS-klass
+			record.element.addClass( ""+$('.arena-external-link a').attr('href') );
+
 			$(".arena-detail-right").after('<div id="extRes"></div>');
+
 			// Göm/snygga till en del fält
 						
 			// Dölj originaltiteln på filmer
@@ -35,6 +39,9 @@ $(function() {
 			// Bok, Ljudböcker, DVD
 			if ( record.media === "DVD" ) {
 				record.dvd();
+
+				// $('.arena-detail-notes-list').append('<input type="checkbox" role="button" id="read_more" /><label for="read_more"><span>Mer information...</span><span>Mindre information...</span></label>');
+
 			}
 			else if ( record.media === "Bok" || record.media === "E-bok" ) {
 
@@ -56,6 +63,19 @@ $(function() {
 				record.ljudprov();
 		
 			}
+
+			// Snygga till "Fler av författaren"
+			(function() {
+				var cssClass = 'portlet-listRecordSearchResult',
+					settings = {
+						truncate: true
+					};
+
+				var s = new SearchResult($('.'+cssClass), settings);
+				Wicket.Ajax.registerPostCallHandler(function() {
+					s = new SearchResult($('.'+cssClass), settings);
+				});
+			}());
 
 		});
 	}
