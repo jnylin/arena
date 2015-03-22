@@ -63,8 +63,15 @@ module.exports = function(grunt) {
         tasks: ['jshint:gruntfile']
       },
       liferay: {
-        files: ['liferay/*.js', '!liferay/*_dynamicTitle.js', '!liferay/*.old.js', '!liferay/old/*'],
-		tasks: ['jshint:liferay', 'uglify:liferay'],
+        files: '<%= uglify.liferay.src =>',
+		tasks: ['liferay'],
+		options: {
+          spawn: false
+		}
+      },
+      lib: {
+        files: '<%= concat.dist.det =>',
+		tasks: ['lib'],
 		options: {
           spawn: false
 		}
@@ -85,5 +92,6 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['jshint']);
   grunt.registerTask('test:lib', ['jshint:files']);
   grunt.registerTask('test:liferay', ['jshint:liferay']);
+  grunt.registerTask('test:gruntfile', ['jshint:gruntfile']);
 
 };
