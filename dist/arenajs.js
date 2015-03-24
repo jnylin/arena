@@ -1,4 +1,4 @@
-/*! arenajs - v1.0.0 - 2015-03-01
+/*! arenajs - v1.0.0 - 2015-03-24
 * https://github.com/jnylin/vimmarena-js
 * Copyright (c) 2015 Jakob Nylin; Licensed GPL */
 function Bokpuffen(record) {
@@ -430,6 +430,7 @@ DetailViewMethods.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, tar
 DetailViewMethods.prototype.addYoutubeMovie = function(id) {
 	// id = id hos youtube
 	// url = baseUrl + id + ?rel=0
+	console.log("addYoutubeMovie-id: " + id);
 	var baseUrl = "http://www.youtube-nocookie.com/embed/",
 		width = "560",
 		height = "315";
@@ -465,13 +466,16 @@ DetailViewMethods.prototype.audioPlayer = function(audioUrl,linkTxt,linkTitle) {
 };
 
 DetailViewMethods.prototype.boktipset = function() {
-	var b = new Boktipset('OHt0dnZGVhTraT0X45VnA', this.record);
+	// Lägg in egen API-nyckel
+	var apiKey = "OHt0dnZGVhTraT0X45VnA";
+	new Boktipset(apiKey, this.record);
 };
 
 
 function Dvd(record) {
 	this.record = record;
 
+	// API-nyckel som första argument till Tmdb
     var tmdb = new Tmdb('de9f79bfc08b502862e4d8bba5723414', this),
 		query;
 
@@ -481,6 +485,7 @@ function Dvd(record) {
 		query += ' ' + record.title.sub;
 	}
 
+	console.log(tmdb);	
 	tmdb.search(query);
 
 }
@@ -573,6 +578,8 @@ SearchResult.prototype.init = function(e, settings) {
 		}
 
 		if ( settings.truncate ) {
+			// Visa hela titeln när muspekaren förs över
+			SearchResult.prototype.setTitleOnAnchor(libraryRecord.subElements.title.parents('a'), libraryRecord.title.main);
 			libraryRecord.truncateTitle();
 		}
 
@@ -614,6 +621,11 @@ SearchResult.prototype.init = function(e, settings) {
 		});
 
 	});
+};
+
+SearchResult.prototype.setTitleOnAnchor = function(a, title) {
+	// a är ett jQuery-objekt
+	a.attr('title',title);
 };
 
 SearchResult.prototype.settings = {
@@ -958,6 +970,42 @@ Tmdb.prototype.setUrlPoster = function(poster_path) {
 	}
 };
 
+function Youtube(id) {
+	this.id = id;
+	this.init();
+}
+
+Youtube.prototype.init = function() {
+	var youtube = document.getElementById(this.id);
+	
+	// Based on the YouTube ID, we can easily find the thumbnail image
+	var img = document.createElement("img");
+	img.setAttribute("src", "http://i.ytimg.com/vi/" + this.id + "/hqdefault.jpg");
+	img.setAttribute("class", "thumb");
+
+	// Overlay the Play icon to make it look like a video player
+	var playButton = document.createElement("i");
+	playButton.setAttribute("class","fa fa-youtube-play"); // Font Awesome
+
+	youtube.appendChild(img);
+	youtube.appendChild(playButton);
+
+	// Attach an onclick event to the YouTube Thumbnail
+	youtube.onclick = function() {
+
+		// Create an iFrame with autoplay set to true
+		var iframe = document.createElement("iframe");
+		iframe.setAttribute("src", "https://www.youtube.com/embed/" + this.id + "?autoplay=1&autohide=1&border=0&wmode=opaque&enablejsapi=1");
+
+		// The height and width of the iFrame should be the same as parent
+		iframe.style.width  = this.style.width;
+		iframe.style.height = this.style.height;
+
+		// Replace the YouTube thumbnail with YouTube HTML5 Player
+		this.parentNode.replaceChild(iframe, this);
+ 
+	};
+};
 // Globala
 window.REG_EXP_YEAR = new RegExp("[0-9]{4}", "i");
 
