@@ -1,4 +1,4 @@
-/*! arenajs - v1.0.0 - 2015-03-24
+/*! arenajs - v1.0.1 - 2015-03-26
 * https://github.com/jnylin/vimmarena-js
 * Copyright (c) 2015 Jakob Nylin; Licensed GPL */
 function Bokpuffen(record) {
@@ -985,6 +985,7 @@ Youtube.prototype.init = function() {
 
 	// Overlay the Play icon to make it look like a video player
 	var playButton = document.createElement("i");
+	//playButton.setAttribute("href","")
 	playButton.setAttribute("class","fa fa-youtube-play"); // Font Awesome
 
 	youtube.appendChild(img);
