@@ -41,7 +41,7 @@
 								// Sätt sessionStorage
 								if(typeof(Storage) !== "undefined") {
 									sessionStorage.setItem("name", $('#name').val());
-									sessionStorage.setItam("email", $('#email').val());
+									sessionStorage.setItem("email", $('#email').val());
 								}
 
 								// Skicka det
