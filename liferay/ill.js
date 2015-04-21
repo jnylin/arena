@@ -1,3 +1,7 @@
+/* 	Testa sessionStorage 
+	kom ihåg att ta bort vid utlogg
+	delete sessionStorage.name
+*/
 (function ($){
 	var urlValidationPlugin = 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.0/jquery.validate.min.js';
 	$.getScript(urlValidationPlugin).done(function (script, textStatus) {
@@ -32,7 +36,13 @@
 								var options = { 
 									success:       showResponse,  // post-submit callback 
 									url:       'http://jnylin.name/bibl/arena/send_wish.php'         // override for form's 'action' attribute 
-								};			
+								};
+								
+								// Sätt sessionStorage
+								if(typeof(Storage) !== "undefined") {
+									sessionStorage.setItem("name", $('#name').val());
+									sessionStorage.setItam("email", $('#email').val());
+								}
 
 								// Skicka det
 								$(form).ajaxSubmit(options);
@@ -59,6 +69,28 @@
 				if ( card && card !== "1234" ) {
 					$(".illAcq form").show();
 					$(".illAcq .feedbackPanelERROR").hide();
+				}
+				
+				// Kolla stöd för Local Storage
+				if(typeof(Storage) !== "undefined") {
+					// Code for localStorage/sessionStorage.
+					console.log("Web Storage is supported");
+					
+					// Hämta lagrade värden (sätts i samband med submit)
+					if ( sessionStorage.name ) {
+						$('#name').val(sessionStorage.getItem("name"));
+					}
+					if ( sessionStorage.email ) {
+						$('#email').val(sessionStorage.getItem("email"));
+					}					
+					
+					// Rensa vid utlogg
+					if ( typeof(card) === "undefined" ) {
+						delete sessionStorage.name;
+						delete sessionStorage.email;
+					}
+				} else {
+					console.log("Sorry! No Web Storage support..");
 				}
 			
 				// Sätt valideringsregler
