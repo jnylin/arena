@@ -1,8 +1,10 @@
 (function($) {
 	function init() {
-		$.cachedScript("http://bibliotek.vimmerby.se/documents/58068/138011/arenajs.min.js/ce0740d4-a718-4217-aa67-55035d95f6eb").done(function() {
-			new Youtube('WzPa4faLcDs');
-		});
+		$.cachedScript("http://bibliotek.vimmerby.se/documents/58068/138011/arenajs.min.js/ce0740d4-a718-4217-aa67-55035d95f6eb").done(function() {	
+			$('.youtube').each(function() {
+				new Youtube( $(this).attr('id') );
+			});
+		});			
 	}
 
 	// Cross-domain AJAX för IE 8 och 9
@@ -14,4 +16,5 @@
 	else {
 		init();
 	}
+
 }(jQuery));

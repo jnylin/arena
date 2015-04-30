@@ -1,13 +1,62 @@
-/* 	Testa sessionStorage 
-	kom ihåg att ta bort vid utlogg
-	delete sessionStorage.name
-*/
 (function ($){
+	// Hantera svaret från servern
+	function showResponse(data, statusText, xhr, $form)  {
+		var feedbackPanel = $('.illAcq ul.feedbackPanel'),
+			form = $('.illAcq form');
+			
+		//console.debug(feedbackPanel);
+			
+		if ( data.success === true ) {
+			//console.debug("success");
+			feedbackPanel.html('<li class="feedbackPanelINFO"><span class="fa fa-info"></span> <span class="feedbackPanelINFO">'+data.message+'</span></li>');
+			form.hide();
+		}
+		else {
+			//console.debug("error");
+			feedbackPanel.html('<li class="feedbackPanelERROR"><span class="fa fa-warning"></span> <span class="feedbackPanelERROR">'+data.message+'</span></li>');
+		}
+		feedbackPanel.show();
+	}
+	
+	// Initialisera formuläret
+	function init() {
+		// Sätt lånekortsnummer
+		var card = $('div.arena-external-link > a').attr('href');
+		$('input[name=card]').attr('value',card);
+				
+		if ( card && card !== "1234" ) {
+			$(".illAcq form").show();
+			$(".illAcq .feedbackPanelERROR").hide();
+		}
+				
+		// Kolla stöd för Local Storage
+		if(typeof(Storage) !== "undefined") {
+				
+			// Hämta lagrade värden (sätts i samband med submit)
+			if ( sessionStorage.name ) {
+				$('#name').val(sessionStorage.getItem("name"));
+			}
+			if ( sessionStorage.email ) {
+				$('#email').val(sessionStorage.getItem("email"));
+			}					
+					
+			// Rensa vid utlogg
+			//console.debug(card);
+			if ( typeof(card) === "undefined" ) {
+				delete sessionStorage.name;
+				delete sessionStorage.email;
+			}
+		} else {
+			console.log("Sorry! No Web Storage support..");
+		}	
+	}
+	
+	// Main
 	var urlValidationPlugin = 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.0/jquery.validate.min.js';
-	$.getScript(urlValidationPlugin).done(function (script, textStatus) {
+	$.cachedScript(urlValidationPlugin).done(function (script, textStatus) {
 	
 		var urlFormPlugin = 'http://oss.maxcdn.com/jquery.form/3.50/jquery.form.min.js';
-		$.getScript(urlFormPlugin).done(function (script, textStatus) {
+		$.cachedScript(urlFormPlugin).done(function (script, textStatus) {
 
 			var validation = {};
  
@@ -35,7 +84,7 @@
 								// Förbered formuläret
 								var options = { 
 									success:       showResponse,  // post-submit callback 
-									url:       'http://jnylin.name/bibl/arena/send_wish.php'         // override for form's 'action' attribute 
+									url:       'http://arena.itsam.se/send_wish.php'         // override for form's 'action' attribute 
 								};
 								
 								// Sätt sessionStorage
@@ -46,7 +95,8 @@
 
 								// Skicka det
 								$(form).ajaxSubmit(options);
-								$('.illAcq form').slideUp();								
+								$('.illAcq form').slideUp();
+								$('.illAcq .clear').slideDown();
 							}						
 							else {
 								// IE och CORS är ingen rolig kombination, skicka på vanligt sätt
@@ -61,40 +111,22 @@
 			};			
 		
 			$(function() {
-				// Sätt lånekortsnummer
-				var card = $('div.arena-external-link > a').attr('href');
-				$('input[name=card]').attr('value',card);
-				
-				console.log("card = " + card);
-				if ( card && card !== "1234" ) {
-					$(".illAcq form").show();
-					$(".illAcq .feedbackPanelERROR").hide();
-				}
-				
-				// Kolla stöd för Local Storage
-				if(typeof(Storage) !== "undefined") {
-					// Code for localStorage/sessionStorage.
-					console.log("Web Storage is supported");
-					
-					// Hämta lagrade värden (sätts i samband med submit)
-					if ( sessionStorage.name ) {
-						$('#name').val(sessionStorage.getItem("name"));
-					}
-					if ( sessionStorage.email ) {
-						$('#email').val(sessionStorage.getItem("email"));
-					}					
-					
-					// Rensa vid utlogg
-					if ( typeof(card) === "undefined" ) {
-						delete sessionStorage.name;
-						delete sessionStorage.email;
-					}
-				} else {
-					console.log("Sorry! No Web Storage support..");
-				}
+				init();
 			
 				// Sätt valideringsregler
 				validation.setupFormValidation();
+				
+				$('.clear').click(function() {
+					var form = $('.illAcq form'),
+						feedbackPanel = $('.illAcq ul.feedbackPanel');
+					form.trigger('reset');
+					$('.illAcq .clear').hide();
+					feedbackPanel.hide();
+					form.slideDown();
+					init();
+				});
+				
+				
 			});			
 
 		}).fail(function (jqxhr, settings, exception) {
@@ -104,16 +136,5 @@
 	}).fail(function (jqxhr, settings, exception) {
 		console.log("Failed loading script: " + urlValidationPlugin);
 	});
-	
-	// Hantera svaret från servern
-	function showResponse(data, statusText, xhr, $form)  { 
-		if ( data.success === true ) {
-			$('.illAcq ul.feedbackPanel').html('<li class="feedbackPanelINFO"><span class="fa fa-info"></span> <span class="feedbackPanelINFO">'+data.message+'</span></li>');
-			$('.illAcq form').hide();
-		}
-		else {
-			$('.illAcq ul.feedbackPanel').html('<li class="feedbackPanelERROR"><span class="fa fa-warning"></span> <span class="feedbackPanelERROR">'+data.message+'</span></li>');
-		}
-	} 
 		
 })(jQuery);

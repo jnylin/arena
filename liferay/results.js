@@ -39,7 +39,7 @@ $(function() {
 			// Bok, Ljudböcker, DVD
 			if ( record.media === "DVD" ) {
 				record.dvd();
-
+				
 				// $('.arena-detail-notes-list').append('<input type="checkbox" role="button" id="read_more" /><label for="read_more"><span>Mer information...</span><span>Mindre information...</span></label>');
 
 			}
@@ -63,6 +63,15 @@ $(function() {
 				record.ljudprov();
 		
 			}
+			
+			// Sätt igång Youtube direkt via play-knabben
+			(function() {
+				console.log($("a[href='#youtube-container']"));
+				$("a[href='#youtube-container']").click(function() {
+					console.log($(this).find('.youtube'));
+					$(this).find('.youtube').click();
+				});
+			}());				
 
 			// Snygga till "Fler av författaren"
 			(function() {
