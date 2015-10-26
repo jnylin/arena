@@ -52,10 +52,10 @@
 	}
 	
 	// Main
-	var urlValidationPlugin = 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.0/jquery.validate.min.js';
+	var urlValidationPlugin = '//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.0/jquery.validate.min.js';
 	$.cachedScript(urlValidationPlugin).done(function (script, textStatus) {
 	
-		var urlFormPlugin = 'http://oss.maxcdn.com/jquery.form/3.50/jquery.form.min.js';
+		var urlFormPlugin = '//oss.maxcdn.com/jquery.form/3.50/jquery.form.min.js';
 		$.cachedScript(urlFormPlugin).done(function (script, textStatus) {
 
 			var validation = {};
@@ -79,7 +79,7 @@
 							fee: "Du måste acceptera avgiften"
 						},
 						submitHandler: function(form) {
-							if ( $('html.ie8, html.ie9').length === 0 ) {
+							/*if ( $('html.ie8, html.ie9').length === 0 ) {
 						
 								// Förbered formuläret
 								var options = { 
@@ -98,13 +98,13 @@
 								$('.illAcq form').slideUp();
 								$('.illAcq .clear').slideDown();
 							}						
-							else {
+							else {*/
 								// IE och CORS är ingen rolig kombination, skicka på vanligt sätt
 								// och lägg resultatet i en iframe
 								$('iframe[name="outputForIE"]').slideDown();
 								form.submit();
 								$('.illAcq form').slideUp();								
-							}
+							//}
 						}
 					});
 				}

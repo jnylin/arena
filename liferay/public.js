@@ -145,5 +145,5 @@ if ( ! window.console ) {
 })(jQuery);
 
 // Läs in CSS
-loadCss("http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css");
+loadCss("//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css");
 

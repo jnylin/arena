@@ -1,4 +1,4 @@
-/*! arenajs - v1.0.1 - 2015-03-26
+/*! arenajs - v1.0.1 - 2015-10-26
 * https://github.com/jnylin/vimmarena-js
 * Copyright (c) 2015 Jakob Nylin; Licensed GPL */
 function Bokpuffen(record) {
@@ -185,7 +185,7 @@ Bokvideo.prototype.searchCallback = function(thisObj, view) {
 				switch ( view) {
 					case 'detail':
 						methods.addYoutubeMovie(video.id);
-						methods.addLnkToExtRes('#youtube', 'Bokvideo', 'Se en bokvideo', '_self', 'btnPlay');
+						methods.addLnkToExtRes('#youtube-container', 'Bokvideo', 'Se en bokvideo', '_self', 'btnPlay');
 						break;
 					case 'list':
 						methods.advertise('Bokvideo');
@@ -264,6 +264,7 @@ function CatalogueRecord(e, view) {
 				isbn = thisIsbn;
 				break;
 			}
+			// Och om isbn13 inte finns??
 		}
 	}
 
@@ -430,13 +431,14 @@ DetailViewMethods.prototype.addLnkToExtRes = function(url, lnkTxt, lnkTitle, tar
 DetailViewMethods.prototype.addYoutubeMovie = function(id) {
 	// id = id hos youtube
 	// url = baseUrl + id + ?rel=0
-	console.log("addYoutubeMovie-id: " + id);
-	var baseUrl = "http://www.youtube-nocookie.com/embed/",
+	var baseUrl = "//www.youtube-nocookie.com/embed/",
 		width = "560",
 		height = "315";
 
 	// Lägg till youtube-filmen till sidan
-	$('#youtube').prepend('<iframe width="' + width + '" height="' + height + '" src="' + baseUrl + id + '?rel=0" frameborder="0" allowfullscreen></iframe>');
+	$('#youtube').prepend('<div class="youtube" style="width: ' + width + '; height: ' + height + '" id="' + id + '" />');
+	new Youtube(id);
+	//$('#youtube').prepend('<iframe width="' + width + '" height="' + height + '" src="' + baseUrl + id + '?rel=0" frameborder="0" allowfullscreen></iframe>');
 	$('#youtube').show();
 	
 };
@@ -452,7 +454,7 @@ DetailViewMethods.prototype.audioPlayer = function(audioUrl,linkTxt,linkTitle) {
 				});
 
 			},
-			swfPath: "http://bibliotek.vimmerby.se/documents/58068/137602/Jplayer.swf/82ba0888-e101-438a-a73b-92f31bdc5f74"
+			swfPath: "//bibliotek.vimmerby.se/documents/58068/137602/Jplayer.swf/82ba0888-e101-438a-a73b-92f31bdc5f74"
 		});
 		
 		// Lägg till länk
@@ -466,16 +468,13 @@ DetailViewMethods.prototype.audioPlayer = function(audioUrl,linkTxt,linkTitle) {
 };
 
 DetailViewMethods.prototype.boktipset = function() {
-	// Lägg in egen API-nyckel
-	var apiKey = "OHt0dnZGVhTraT0X45VnA";
-	new Boktipset(apiKey, this.record);
+	var b = new Boktipset('OHt0dnZGVhTraT0X45VnA', this.record);
 };
 
 
 function Dvd(record) {
 	this.record = record;
 
-	// API-nyckel som första argument till Tmdb
     var tmdb = new Tmdb('de9f79bfc08b502862e4d8bba5723414', this),
 		query;
 
@@ -485,7 +484,6 @@ function Dvd(record) {
 		query += ' ' + record.title.sub;
 	}
 
-	console.log(tmdb);	
 	tmdb.search(query);
 
 }
@@ -493,8 +491,80 @@ function Dvd(record) {
 Dvd.prototype.cover = function(tmdb) {
 	this.record.subElements.bookJacket.find('img').attr('src', tmdb.urlPoster);
 	if ( this.record.view === 'detail') {
-		this.record.subElements.cover.append('<a href="' + tmdb.url + '/' + tmdb.mediaType + '/' + tmdb.id + '?language=sv' + '" target="_blank" title="Information hos TMDb"><img src="http://bibliotek.vimmerby.se/' + tmdb.pathLogo + '" alt="themoviedb.org" /></a>');
+		this.record.subElements.cover.append('<a href="' + tmdb.url + '/' + tmdb.mediaType + '/' + tmdb.id + '?language=sv' + '" target="_blank" title="Information hos TMDb"><img src="//bibliotek.vimmerby.se/' + tmdb.pathLogo + '" alt="themoviedb.org" /></a>');
 	}
+};
+
+function Isbn(isbn) {
+	var str_isbn = isbn.toString();
+	this.init(str_isbn);
+}
+
+Isbn.prototype.init = function(isbn) {
+	try {
+		if ( isbn.length === 13 ) {
+			console.log("isbn13");
+			this.isbn13 = isbn;
+			this.isbn10 = this.convert13to10(isbn);
+		}
+		else if ( isbn.length === 10 ) {
+			console.log("isbn10");
+			this.isbn10 = isbn;
+			this.isbn13 = this.convert10to13(isbn);
+		}
+		else {
+			throw 'Not a valid isbn';
+		}
+	}
+	catch (err) {
+		console.log(err);
+	}
+};
+
+Isbn.prototype.convert10to13 = function(isbn) {
+/* Konverterar 10-siffrigt ISBN till 13-siffrigt */
+	var isbn13_prefix = "978",
+		str = isbn13_prefix.concat(isbn.substr(0,9)),
+		arr = str.split("");
+ 
+	var i = 0,
+		sum = 0,
+		cdigit;
+
+	for (i=0;i<arr.length;i++) {
+		var x;
+		if(i%2 === 0) {
+			x = 1;
+		}
+		else {
+			x = 3;
+		}
+		sum += arr[i] * x;
+	}
+
+	cdigit = 10 - sum%10;
+	if ( cdigit === 10 ) { cdigit = 0; }
+		
+	return str + cdigit;
+};
+
+Isbn.prototype.convert13to10 = function(isbn) {
+/* Konverterar 13-siffrigt ISBN till 10-siffrigt */
+	var str = isbn.substr(3,9),
+		arr = str.split("");
+ 
+	var i = 0,
+		x = 10,
+		sum = 0,
+		cdigit;
+	for (i=0;i<arr.length;i++,x--) {
+		sum += arr[i] * x;
+	}
+	cdigit = 11 - sum%11;
+	if ( cdigit === 11 ) { cdigit = 0; }
+	if ( cdigit === 10 ) { cdigit = "X"; }
+		
+	return str + cdigit;
 };
 
 function ListViewMethods(record) {
@@ -639,8 +709,8 @@ SearchResult.prototype.settings = {
 function Smakprov(record) {
 	this.record = record;
 	
-	$.getJSON('/smakprov/v1/records?isbn=' + this.record.isbn, this.callback(this, this.record.view));		
-	//$.getJSON('http://jnylin.name/bibl/smakprov/provlasSmakprov.php?isbn=' + this.record.isbn, this.callback(this, this.record.view));		
+	//$.getJSON('/smakprov/v1/records?isbn=' + this.record.isbn, this.callback(this, this.record.view));		
+	$.getJSON('//jnylin.name/bibl/smakprov/smakprov.php?isbn=' + this.record.isbn, this.callback(this, this.record.view));		
 
 }
 
@@ -756,11 +826,11 @@ function Tmdb(apiKey, dvd) {
 	this.dvd = dvd;
 }
 
-Tmdb.prototype.url = 'http://www.themoviedb.org';
+Tmdb.prototype.url = '//www.themoviedb.org';
 // Egenskaper för API:t
-Tmdb.prototype.api = 'http://api.themoviedb.org/3/';
-Tmdb.prototype.pathLogo = "/documents/58068/140667/tmdb.png/fa3903c1-b170-4ab2-970a-baf9264001d9?t=1387215209438";
-Tmdb.prototype.baseUrlImg = 'http://image.tmdb.org/t/p/w';
+Tmdb.prototype.api = '//api.themoviedb.org/3/';
+Tmdb.prototype.pathLogo = "documents/21650/116394/tmdb.png/fa3903c1-b170-4ab2-970a-baf9264001d9?t=1387215209438";
+Tmdb.prototype.baseUrlImg = '//image.tmdb.org/t/p/w';
 Tmdb.prototype.posterSizes = [92, 154, 185, 342, 500, 780];
 
 // API-funktioner
@@ -873,7 +943,7 @@ Tmdb.prototype.trailerCallback = function(thisObj, lang) {
 			switch ( thisObj.dvd.record.view ) {
 				case 'detail':
 					thisObj.dvd.record.methodsOnThisView.addYoutubeMovie(id);
-					thisObj.dvd.record.methodsOnThisView.addLnkToExtRes("#youtube", "Trailer", "Se filmens trailer", "_self", "btnPlay");
+					thisObj.dvd.record.methodsOnThisView.addLnkToExtRes("#youtube-container", "Trailer", "Se filmens trailer", "_self", "btnPlay");
 					break;
 				case 'list':
 					thisObj.dvd.record.methodsOnThisView.advertise('Trailer');
@@ -976,36 +1046,39 @@ function Youtube(id) {
 }
 
 Youtube.prototype.init = function() {
-	var youtube = document.getElementById(this.id);
+	var div = document.getElementById(this.id);
 	
 	// Based on the YouTube ID, we can easily find the thumbnail image
 	var img = document.createElement("img");
-	img.setAttribute("src", "http://i.ytimg.com/vi/" + this.id + "/hqdefault.jpg");
+	img.setAttribute("src", "//i.ytimg.com/vi/" + this.id + "/hqdefault.jpg");
 	img.setAttribute("class", "thumb");
 
 	// Overlay the Play icon to make it look like a video player
 	var playButton = document.createElement("i");
 	//playButton.setAttribute("href","")
-	playButton.setAttribute("class","fa fa-youtube-play"); // Font Awesome
+	if ( $('html').attr('class').match(/\b(mobile)\b/) ) {
+		playButton.setAttribute("class","fa fa-youtube-square");
+	}
+	else {
+		playButton.setAttribute("class","fa fa-youtube-play");
+	}
 
-	youtube.appendChild(img);
-	youtube.appendChild(playButton);
-
-	// Attach an onclick event to the YouTube Thumbnail
-	youtube.onclick = function() {
-
-		// Create an iFrame with autoplay set to true
+	div.appendChild(img);
+	div.appendChild(playButton);
+	
+	div.onclick = function() {
+	
+		// iframe med autoplay
 		var iframe = document.createElement("iframe");
-		iframe.setAttribute("src", "https://www.youtube.com/embed/" + this.id + "?autoplay=1&autohide=1&border=0&wmode=opaque&enablejsapi=1");
+		iframe.setAttribute("src", "https://www.youtube.com/embed/" + this.id + "?autoplay=1&autohide=1&border=0&wmode=opaque&enablejsapi=1&rel=0");
 
-		// The height and width of the iFrame should be the same as parent
 		iframe.style.width  = this.style.width;
 		iframe.style.height = this.style.height;
 
-		// Replace the YouTube thumbnail with YouTube HTML5 Player
 		this.parentNode.replaceChild(iframe, this);
  
 	};
+	
 };
 // Globala
 window.REG_EXP_YEAR = new RegExp("[0-9]{4}", "i");
