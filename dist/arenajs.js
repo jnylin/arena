@@ -1,4 +1,4 @@
-/*! arenajs - v1.0.1 - 2015-10-26
+/*! arenajs - v1.0.1 - 2015-11-21
 * https://github.com/jnylin/vimmarena-js
 * Copyright (c) 2015 Jakob Nylin; Licensed GPL */
 function Bokpuffen(record) {
@@ -709,8 +709,8 @@ SearchResult.prototype.settings = {
 function Smakprov(record) {
 	this.record = record;
 	
-	//$.getJSON('/smakprov/v1/records?isbn=' + this.record.isbn, this.callback(this, this.record.view));		
-	$.getJSON('//jnylin.name/bibl/smakprov/smakprov.php?isbn=' + this.record.isbn, this.callback(this, this.record.view));		
+	$.getJSON('/smakprov/v1/records?isbn=' + this.record.isbn, this.callback(this, this.record.view));		
+	//$.getJSON('//jnylin.name/bibl/smakprov/smakprov.php?isbn=' + this.record.isbn, this.callback(this, this.record.view));		
 
 }
 
