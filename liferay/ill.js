@@ -79,32 +79,31 @@
 							fee: "Du måste acceptera avgiften"
 						},
 						submitHandler: function(form) {
-							/*if ( $('html.ie8, html.ie9').length === 0 ) {
+							// Sätt sessionStorage
+							if(typeof(Storage) !== "undefined") {
+								sessionStorage.setItem("name", $('#name').val());
+								sessionStorage.setItem("email", $('#email').val());
+							}
+							if ( $('html.ie8, html.ie9').length === 0 ) {
 						
 								// Förbered formuläret
 								var options = { 
 									success:       showResponse,  // post-submit callback 
-									url:       'http://arena.itsam.se/send_wish.php'         // override for form's 'action' attribute 
+									url:       'https://jnylin.name/bibl/arena/send_wish.php' /*'http://arena.itsam.se/send_wish.php'*/         // override for form's 'action' attribute 
 								};
 								
-								// Sätt sessionStorage
-								if(typeof(Storage) !== "undefined") {
-									sessionStorage.setItem("name", $('#name').val());
-									sessionStorage.setItem("email", $('#email').val());
-								}
-
 								// Skicka det
 								$(form).ajaxSubmit(options);
 								$('.illAcq form').slideUp();
 								$('.illAcq .clear').slideDown();
 							}						
-							else {*/
+							else {
 								// IE och CORS är ingen rolig kombination, skicka på vanligt sätt
 								// och lägg resultatet i en iframe
 								$('iframe[name="outputForIE"]').slideDown();
 								form.submit();
 								$('.illAcq form').slideUp();								
-							//}
+							}
 						}
 					});
 				}
