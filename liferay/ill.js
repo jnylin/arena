@@ -84,12 +84,12 @@
 								sessionStorage.setItem("name", $('#name').val());
 								sessionStorage.setItem("email", $('#email').val());
 							}
-							if ( $('html.ie8, html.ie9').length === 0 ) {
+							if ( $('html.ie8, html.ie9').length === 0 && false ) {
 						
 								// Förbered formuläret
 								var options = { 
 									success:       showResponse,  // post-submit callback 
-									url:       'https://jnylin.name/bibl/arena/send_wish.php' /*'http://arena.itsam.se/send_wish.php'*/         // override for form's 'action' attribute 
+									url:       'https://arena.itsam.se/send_wish.php'         // override for form's 'action' attribute 
 								};
 								
 								// Skicka det
